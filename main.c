@@ -6,10 +6,24 @@
 //  Copyright © 2019 Charlie Poff-Webster. All rights reserved.
 //
 
-#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "parser.h"
 
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    printf("Hello, World!\n");
+
+int main(){
+
+    printf("A parser for a subset of Scheme. \n");
+    printf("Type any Scheme expression and its \n");
+    printf("'parse tree' will be printed out. \n");
+    printf("Type Ctrl-c to quit.: \n \n");
+    
+    printf("scheme> ");
+    while(free){
+        S_Expression();
+    }
+
+
+    
     return 0;
 }

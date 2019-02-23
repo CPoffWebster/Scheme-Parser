@@ -1,0 +1,119 @@
+
+A parser for a subset of Scheme.
+Type any Scheme expression and its
+"parse tree" will be printed out.
+Type Ctrl-c to quit.
+
+scheme> hello
+S_Expression
+  hello
+
+scheme> (a b c)
+S_Expression
+(
+  S_Expression
+    a
+  S_Expression
+    b
+  S_Expression
+    c
+)
+
+scheme> (scheme (or other lisps) allows weird n!a&m%e?s)
+S_Expression
+(
+  S_Expression
+    scheme
+  S_Expression
+  (
+    S_Expression
+      or
+    S_Expression
+      other
+    S_Expression
+      lisps
+  )
+  S_Expression
+    allows
+  S_Expression
+    weird
+  S_Expression
+    n!a&m%e?s
+)
+
+scheme> (a (list (can (be (very (deep) or)relatively)shallow)))
+S_Expression
+(
+  S_Expression
+    a
+  S_Expression
+  (
+    S_Expression
+      list
+    S_Expression
+    (
+      S_Expression
+        can
+      S_Expression
+      (
+        S_Expression
+          be
+        S_Expression
+        (
+          S_Expression
+            very
+          S_Expression
+          (
+            S_Expression
+              deep
+          )
+          S_Expression
+            or
+        )
+        S_Expression
+          relatively
+      )
+      S_Expression
+        shallow
+    )
+  )
+)
+
+scheme> (if it ain't #t it's gotta be #f)
+S_Expression
+(
+  S_Expression
+    if
+  S_Expression
+    it
+  S_Expression
+    ain't
+  S_Expression
+    #t
+  S_Expression
+    it's
+  S_Expression
+    gotta
+  S_Expression
+    be
+  S_Expression
+    #f
+)
+
+scheme> (()()(()()))         
+S_Expression
+(
+  S_Expression
+    ()
+  S_Expression
+    ()
+  S_Expression
+  (
+    S_Expression
+      ()
+    S_Expression
+      ()
+  )
+)
+
+scheme> ^C
