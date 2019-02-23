@@ -44,6 +44,7 @@ void startTokens (int maxLength)
 static char *lexeme;
 static char c;
 static int lookahead;
+static int rec;
 
 
 /****************************************************************
@@ -51,7 +52,6 @@ static int lookahead;
  ****************************************************************/
 
 void S_Expression() {
-    int rec;
     /*
     char token[20];
     startTokens(20);
@@ -62,12 +62,10 @@ void S_Expression() {
         rec++;
     }if(rec == 1) rec++;
      */
-    int temp = rec;
-    while(temp != 0){
-        printf("\t");
-        temp--;
-    }
     
+    //printf("%*d", n, someNumber);
+    //char indent = printf("\t");
+    char indent = '\t';
     
     
     if (!lookahead)                   //get first char
@@ -79,14 +77,14 @@ void S_Expression() {
     if ((c == ')') || (c == '\'')) {  //Case (1): right paren or quote
         rec--;
         lookahead = 0;
-        printf("S_Expression\n");
-        printf("%c \n", c);
+        //printf("%c S_Expression\n", indent);
+        printf("%c %c \n", indent*rec, c);
         S_Expression();
     }
     else if (c == '(') {              //Case (2): left paren or ()
+        printf("%c S_Expression\n", indent*rec);
+        printf("%c %c \n", indent*rec, c);
         rec++;
-        printf("S_Expression\n");
-        printf("%c \n", c);
         lookahead = 1;
         c = getchar();
         S_Expression();
@@ -109,8 +107,10 @@ void S_Expression() {
         lookahead = 1;
         printf("S_Expression\n");
         printf("\t");
+        //printf("%c", indent*rec);
         while ((c != '(') && (c != ')') && (c != ' ') && (c != '\n')) {
-            printf("%c", c);
+            //printf("%c", c);
+            printf("%c %c \n", indent*rec, c);
             c = getchar();
         }//while
         printf("\n");
@@ -133,7 +133,7 @@ void S_Expression() {
         getToken() usually, but not at 0th recursion
      }
 }
-    /*
+    
     else if (c == '#') {              //Case (3): #t or #f
         lookahead = 0;
         c = getchar();
