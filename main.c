@@ -23,14 +23,6 @@ int main(){
     while(free){
         S_Expression();
     }
-    /*
-    int rec = 1;
-    int TAB_LINE = 5;
-    
-    printf("\n");
-    
-    printf("%*s S_Expression\n", rec*TAB_LINE, "");
-*/
     
     return 0;
 }
