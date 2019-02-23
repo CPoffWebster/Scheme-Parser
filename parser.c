@@ -44,7 +44,8 @@ void startTokens (int maxLength)
 static char *lexeme;
 static char c;
 static int lookahead;
-static int rec;
+static int TAB_LINE = 5;
+int rec = 0;
 
 
 /****************************************************************
@@ -52,20 +53,6 @@ static int rec;
  ****************************************************************/
 
 void S_Expression() {
-    /*
-    char token[20];
-    startTokens(20);
-    
-    int rec = 0; //initial count of recursive calls
-    if(rec == 0){
-        //strcpy(token, getToken());
-        rec++;
-    }if(rec == 1) rec++;
-     */
-    
-    //printf("%*d", n, someNumber);
-    //char indent = printf("\t");
-    char indent = '\t';
     
     
     if (!lookahead)                   //get first char
@@ -77,40 +64,48 @@ void S_Expression() {
     if ((c == ')') || (c == '\'')) {  //Case (1): right paren or quote
         rec--;
         lookahead = 0;
-        //printf("%c S_Expression\n", indent);
-        printf("%c %c \n", indent*rec, c);
+        printf("%*s %c \n", rec*TAB_LINE, "", c);
         S_Expression();
     }
+    
     else if (c == '(') {              //Case (2): left paren or ()
-        printf("%c S_Expression\n", indent*rec);
-        printf("%c %c \n", indent*rec, c);
+        printf("%*s S_Expression\n", rec*TAB_LINE, "");
+        printf("%*s %c", rec*TAB_LINE, "", c);
         rec++;
         lookahead = 1;
         c = getchar();
-        S_Expression();
-        while ((c == ' ') || (c == '\n'))
+        if (c == ')'){
+            printf("%c \n", c);
             c = getchar();
-        
+            rec--;
+        } else{
+            printf("\n");
+        }
+        S_Expression();
+        //while ((c == ' ') || (c == '\n'))       //THIS LINE MIGHT BE EXTRANIOUS PLEASE CHECK ME ASAP
+          //  c = getchar();
     }
     
-    /*
-     if token is "(" then
-        getToken()
-        S_exp()
-        while (token is not ")"):
-            S_exp()
-        getToken() usually, but not at 0th recursion
-     */
-    
-    
+    else if (c == '#') {              //Case (3): #t or #f
+        lookahead = 0;
+        c = getchar();
+        if ((c != 't') && (c != 'f')) {
+            printf("Illegal symbol after #.\n");
+            exit(1);
+        }
+        printf("%*s S_Expression\n", rec*TAB_LINE, "");
+        printf("%*s#", (rec*TAB_LINE)+TAB_LINE, "");
+        printf("%c \n", c);
+        S_Expression();
+    }
+
     else {                            //Case (4): scan for symbol
         lookahead = 1;
-        printf("S_Expression\n");
-        printf("\t");
-        //printf("%c", indent*rec);
+        printf("%*s S_Expression\n", rec*TAB_LINE, "");
+        printf("%*s", (rec*TAB_LINE)+TAB_LINE, "");
         while ((c != '(') && (c != ')') && (c != ' ') && (c != '\n')) {
-            //printf("%c", c);
-            printf("%c %c \n", indent*rec, c);
+            printf("%c", c);
+            //printf("%*s %c \n", rec*TAB_LINE, "", c);
             c = getchar();
         }//while
         printf("\n");
