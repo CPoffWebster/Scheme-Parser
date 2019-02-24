@@ -5,13 +5,13 @@
 #breaks it up into tokens.
 
 scheme: lextester.o lexer.o
-	gcc -o scheme lextester.o lexer.o
+	gcc -o scheme main.c parser.o
 
 lextester.o: lextester.c
-	gcc -c lextester.c
+	gcc -c main.c
 
 lexer.o: lexer.c
-	gcc -c lexer.c
+	gcc -c parser.c
 
 clean:
 	rm -f *~ *.o *.a

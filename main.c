@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "parser.h"
 
 
@@ -20,7 +21,7 @@ int main(){
     
     printf("scheme> ");
     
-    while(free){
+    while(SIGQUIT){
         S_Expression();
     }
     

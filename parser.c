@@ -4,7 +4,7 @@
  Charlie Poff-Webster
  
  -------------
- This file implements the interface given in parser.h.
+ This file implements the interface given in parser.c.
  ****************************************************************/
 
 #include <stdlib.h>
@@ -14,34 +14,18 @@
 #include "parser.h"
 
 
+
 /****************************************************************
  Data members
  ------------
- lexeme:    "String" variable that contains the token.
  c:         The current character in the input stream from the keyboard.
  lookahead: Set to 1 iff the previous call to getToken() required
  looking ahead.
+ TAB_LINE:  Set value of a tab line for list indents.
+ rec:       Keeps track of how deep the list is.
  ****************************************************************/
-//static char *lexeme;
-//static char c;
-//static int lookahead;
 
 
-/****************************************************************
-INFO
- ****************************************************************/
-/*
-void startTokens (int maxLength)
-{
-    lookahead = 0;
-    lexeme = NULL;
-    newToken(maxLength);
-}//startTokens
-*/
-
-
-
-static char *lexeme;
 static char c;
 static int lookahead;
 static int TAB_LINE = 5;
@@ -49,7 +33,18 @@ int rec = 0;
 
 
 /****************************************************************
- INFO
+ S_Expression() implementation notes: The function works by getting
+ the first character, in case the previous call required lookahead,
+ then skipping over whitespace. The main part is the "if" statement
+ that handles 4 cases:
+ (1) Leading char is ")" or "'" return, no lookahead
+ (2) Leading char is "(" scan to find ")",
+ if ")" found, no lookahead, return "()",
+ if not found, lookahead=true
+ (3) #: lookahead for t or f, lookahead=false,
+ if found, return "#t" or "#f", else abort
+ (4) Look for other collections of characters,
+ scan for entire symbol up to ( or ()
  ****************************************************************/
 
 void S_Expression() {
@@ -110,39 +105,5 @@ void S_Expression() {
         }//while
         printf("\n");
     }
-    
-
-    
-    
-    
-    /*
-     {
-     if token is "(" then
-        getToken()
-        S_exp()
-        while (token is not ")"):
-            S_exp()
-        getToken() usually, but not at 0th recursion
-     else
-        deal with "()", "#t", "#f" or a symbol
-        getToken() usually, but not at 0th recursion
-     }
-}
-    
-    else if (c == '#') {              //Case (3): #t or #f
-        lookahead = 0;
-        c = getchar();
-        if ((c != 't') && (c != 'f')) {
-            printf("Illegal symbol after #.\n");
-            exit(1);
-        }
-        if (c == 't')
-            strcpy(lexeme, "#t");
-        else
-            strcpy(lexeme, "#f");
-    }
-    
-    return lexeme;
-     */
 }
 
