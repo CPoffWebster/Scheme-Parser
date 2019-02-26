@@ -19,7 +19,6 @@ int main(){
     printf("'parse tree' will be printed out. \n");
     printf("Type Ctrl-c to quit.: \n");
     
-    //printf("scheme> ");
     
     while(free){
         S_Expression();
