@@ -25,11 +25,10 @@
  rec:       Keeps track of how deep the list is.
  ****************************************************************/
 
-
 static char c;
 static int lookahead;
 static int TAB_LINE = 5;
-int rec = 0;
+static int rec = 0;
 
 
 /****************************************************************
@@ -48,7 +47,10 @@ int rec = 0;
  ****************************************************************/
 
 void S_Expression() {
-    
+    if (rec == 0){          //BUGS INPUT ENTIRELY INSIDE A LIST
+        printf("\n");
+        printf("scheme> ");
+    }
     
     if (!lookahead)                   //get first char
         c = getchar();
@@ -77,8 +79,6 @@ void S_Expression() {
             printf("\n");
         }
         S_Expression();
-        //while ((c == ' ') || (c == '\n'))       //THIS LINE MIGHT BE EXTRANIOUS PLEASE CHECK ME ASAP
-          //  c = getchar();
     }
     
     else if (c == '#') {              //Case (3): #t or #f
@@ -100,7 +100,6 @@ void S_Expression() {
         printf("%*s", (rec*TAB_LINE)+TAB_LINE, "");
         while ((c != '(') && (c != ')') && (c != ' ') && (c != '\n')) {
             printf("%c", c);
-            //printf("%*s %c \n", rec*TAB_LINE, "", c);
             c = getchar();
         }//while
         printf("\n");
