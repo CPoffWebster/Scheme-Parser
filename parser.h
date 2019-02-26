@@ -8,6 +8,7 @@
 #ifndef PARSER
 #define PARSER
 #include <stdlib.h>
+#include "lexer.h"
 
 /****************************************************************
  Function: S_Expression()

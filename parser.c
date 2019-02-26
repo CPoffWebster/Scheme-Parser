@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "lexer.h"
 #include "parser.h"
 
 
@@ -25,10 +24,10 @@
  rec:       Keeps track of how deep the list is.
  ****************************************************************/
 
-static char c;
-static int lookahead;
 static int TAB_LINE = 5;
-static int rec = 0;
+static int rec;
+static _Bool firstTime;
+char *token;
 
 
 /****************************************************************
@@ -45,67 +44,68 @@ static int rec = 0;
  (4) Look for other collections of characters,
  scan for entire symbol up to ( or ()
  ****************************************************************/
+// PSEUDO CODE
+//    if token is "(" then
+//        getToken()
+//        S_exp()
+//        while (token is not ")"):
+//            S_exp()
+//        getToken() usually, but not at 0th recursion
+//    else
+//        deal with "()", "#t", "#f" or a symbol
+//        getToken() usually, but not at 0th recursion
 
-void S_Expression() {
-    if (rec == 0){          //BUGS INPUT ENTIRELY INSIDE A LIST
+void s_expr(int rec) {
+    
+    /*if (rec == 0){
         printf("\n");
         printf("scheme> ");
-    }
+    }*/
+    //printf("rec: %d\n", rec);
+    printf("%*s S_Expression \n", rec*TAB_LINE, "");
     
-    if (!lookahead)                   //get first char
-        c = getchar();
-    
-    while ((c == ' ') || (c == '\n')) //skip white space
-        c = getchar();
-    
-    if ((c == ')') || (c == '\'')) {  //Case (1): right paren or quote
-        rec--;
-        lookahead = 0;
-        printf("%*s %c \n", rec*TAB_LINE, "", c);
-        S_Expression();
-    }
-    
-    else if (c == '(') {              //Case (2): left paren or ()
-        printf("%*s S_Expression\n", rec*TAB_LINE, "");
-        printf("%*s %c", rec*TAB_LINE, "", c);
-        rec++;
-        lookahead = 1;
-        c = getchar();
-        if (c == ')'){
-            printf("%c \n", c);
-            c = getchar();
-            rec--;
-        } else{
-            printf("\n");
+    if(!strcmp(token, "(")){
+        printf("%*s %s \n", rec*TAB_LINE, "", token);
+        strcpy(token, getToken());
+        firstTime = 1;
+        s_expr(rec += 1);
+        while(strcmp(token, ")")){
+            s_expr(rec -= 1);
+            printf("%*s ) \n", rec*TAB_LINE, "");
         }
-        S_Expression();
+        if(firstTime != 0) strcpy(token, getToken());
     }
     
-    else if (c == '#') {              //Case (3): #t or #f
-        lookahead = 0;
-        c = getchar();
-        if ((c != 't') && (c != 'f')) {
-            printf("Illegal symbol after #.\n");
-            exit(1);
-        }
-        printf("%*s S_Expression\n", rec*TAB_LINE, "");
-        printf("%*s#", (rec*TAB_LINE)+TAB_LINE, "");
-        printf("%c \n", c);
-        S_Expression();
+    else if(!strcmp(token, "()")){
+        printf("%*s %s \n", (rec*TAB_LINE)+TAB_LINE, "", token);
     }
-
-    else {                            //Case (4): scan for symbol
-        lookahead = 1;
-        printf("%*s S_Expression\n", rec*TAB_LINE, "");
-        printf("%*s", (rec*TAB_LINE)+TAB_LINE, "");
-        while ((c != '(') && (c != ')') && (c != ' ') && (c != '\n')) {
-            printf("%c", c);
-            c = getchar();
-        }//while
-        printf("\n");
+    else if(!strcmp(token, "#t")){
+        printf("%*s %s \n", (rec*TAB_LINE)+TAB_LINE, "", token);
     }
+    else if(!strcmp(token, "#f")){
+        printf("%*s %s \n", (rec*TAB_LINE)+TAB_LINE, "", token);
+    }
+    else if(!strcmp(token, "\'")){
+        printf("%*s %s \n", (rec*TAB_LINE)+TAB_LINE, "", token);
+    }
+    else{
+        printf("%*s %s \n", (rec*TAB_LINE)+TAB_LINE, "", token);
+    }
+    
+    if(firstTime != 0) strcpy(token, getToken());
+    /*
+    if(strcmp(token, ")")){
+        s_expr(rec);
+    }*/
+    
 }
 
 
-
-
+void S_Expression(){
+    token = (char *) calloc(20, sizeof(char));
+    startTokens(20);
+    strcpy(token, getToken());
+    firstTime = 0;
+    rec = 0;
+    s_expr(rec);
+}
