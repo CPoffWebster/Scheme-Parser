@@ -70,7 +70,7 @@ void s_expr(int rec) {
         firstTime = 1;
         s_expr(rec += 1);
         while(strcmp(token, ")")){
-            s_expr(rec -= 1);
+            s_expr(rec -+ 1);
             printf("%*s ) \n", rec*TAB_LINE, "");
         }
         if(firstTime != 0) strcpy(token, getToken());
