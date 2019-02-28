@@ -18,6 +18,7 @@ int main(){
     printf("Type any Scheme expression and its \n");
     printf("'parse tree' will be printed out. \n");
     printf("Type Ctrl-c to quit.: \n");
+    printf("\nscheme> ");
     
     
     while(free){

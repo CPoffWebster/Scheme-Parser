@@ -11,27 +11,54 @@
 #include <string.h>
 #include <stdio.h>
 #include "parser.h"
+#include "lexer.h"
 
+
+
+//Token stores the most recent "token" viewed by lexer.c
+char *token;
 
 
 /****************************************************************
- Data members
+printString(int depth, char* token)
  ------------
  c:         The current character in the input stream from the keyboard.
  lookahead: Set to 1 iff the previous call to getToken() required
  looking ahead.
  TAB_LINE:  Set value of a tab line for list indents.
- rec:       Keeps track of how deep the list is.
+ depth:       Keeps track of how deep the list is.
  ****************************************************************/
 
-static int TAB_LINE = 5;
-static int rec;
-static _Bool firstTime;
-char *token;
+void printString(int depth, char* token){
+    
+    if(!strcmp(token, ")")){
+        for(int x=0; x<depth; x++){
+            printf("     ");
+        }printf("%s\n", token);
+    }
+    
+    else{
+        for(int x=0; x<depth; x++){
+            printf("     ");
+        } printf("S_Expression \n");
+        
+        if(!strcmp(token, "(")){
+            for(int x=0; x<depth; x++){
+                printf("     ");
+            }
+        }else{
+            for(int x=0; x<depth+1; x++){
+                printf("     ");
+            }
+        }
+        printf("%s\n", token);
+    }
+}
 
 
 /****************************************************************
- S_Expression() implementation notes: The function works by getting
+ s_expr(int depth)
+ implementation notes: The function works by getting
  the first character, in case the previous call required lookahead,
  then skipping over whitespace. The main part is the "if" statement
  that handles 4 cases:
@@ -44,59 +71,46 @@ char *token;
  (4) Look for other collections of characters,
  scan for entire symbol up to ( or ()
  ****************************************************************/
-// PSEUDO CODE
-//    if token is "(" then
-//        getToken()
-//        S_exp()
-//        while (token is not ")"):
-//            S_exp()
-//        getToken() usually, but not at 0th recursion
-//    else
-//        deal with "()", "#t", "#f" or a symbol
-//        getToken() usually, but not at 0th recursion
 
-void s_expr(int rec) {
-    
-    /*if (rec == 0){
-        printf("\n");
-        printf("scheme> ");
-    }*/
-    //printf("rec: %d\n", rec);
-    printf("%*s S_Expression \n", rec*TAB_LINE, "");
+void s_expr(int depth) {
     
     if(!strcmp(token, "(")){
-        printf("%*s %s \n", rec*TAB_LINE, "", token);
+        printString(depth, token);
         strcpy(token, getToken());
-        firstTime = 1;
-        s_expr(rec += 1);
+        s_expr(depth+1);
         while(strcmp(token, ")")){
-            s_expr(rec -+ 1);
-            printf("%*s ) \n", rec*TAB_LINE, "");
+            s_expr(depth+1);
         }
-        if(firstTime != 0) strcpy(token, getToken());
+        printString(depth, token);
+        if(depth != 0) strcpy(token, getToken());
     }
     
     else if(!strcmp(token, "()")){
-        printf("%*s %s \n", (rec*TAB_LINE)+TAB_LINE, "", token);
+        printString(depth, token);
+        if(depth != 0) strcpy(token, getToken());
     }
     else if(!strcmp(token, "#t")){
-        printf("%*s %s \n", (rec*TAB_LINE)+TAB_LINE, "", token);
+        printString(depth, token);
+        if(depth != 0) strcpy(token, getToken());
     }
     else if(!strcmp(token, "#f")){
-        printf("%*s %s \n", (rec*TAB_LINE)+TAB_LINE, "", token);
+        printString(depth, token);
+        if(depth != 0) strcpy(token, getToken());
     }
     else if(!strcmp(token, "\'")){
-        printf("%*s %s \n", (rec*TAB_LINE)+TAB_LINE, "", token);
+        printString(depth, token);
+        if(depth != 0) strcpy(token, getToken());
     }
     else{
-        printf("%*s %s \n", (rec*TAB_LINE)+TAB_LINE, "", token);
+        printString(depth, token);
+        if(depth != 0) strcpy(token, getToken());
     }
     
-    if(firstTime != 0) strcpy(token, getToken());
-    /*
-    if(strcmp(token, ")")){
-        s_expr(rec);
-    }*/
+    
+    if (depth == 0){
+        printf("\n");
+        printf("scheme> ");
+    }
     
 }
 
@@ -105,7 +119,6 @@ void S_Expression(){
     token = (char *) calloc(20, sizeof(char));
     startTokens(20);
     strcpy(token, getToken());
-    firstTime = 0;
-    rec = 0;
-    s_expr(rec);
+    int depth = 0;
+    s_expr(depth);
 }
