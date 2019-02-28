@@ -7,14 +7,17 @@
 # all ".o" and ".a" files)
 
 # Executable file "scheme" depends on main.o and parser.o
-scheme: main.o parser.o
-	gcc -o exec main.o parser.o
+scheme: main.o parser.o lexer.o
+	gcc -o exec main.o parser.o lexer.o
 
 main.o: main.c
 	gcc -c main.c
 
-parser.o: parser.c lexer.h
-	gcc -c parser.c lexer.h
+parser.o: parser.c
+	gcc -c parser.c
+
+lexer.o: lexer.c
+	gcc -c lexer.c
 
 clean:
 	rm -f *~ *.o *.a
