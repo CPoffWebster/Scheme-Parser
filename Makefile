@@ -13,8 +13,8 @@ scheme: main.o parser.o
 main.o: main.c
 	gcc -c main.c
 
-parser.o: parser.c
-	gcc -c parser.c
+parser.o: parser.c lexer.h
+	gcc -c parser.c lexer.h
 
 clean:
 	rm -f *~ *.o *.a

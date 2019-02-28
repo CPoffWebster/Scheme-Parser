@@ -11,7 +11,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "parser.h"
-#include "lexer.h"
 
 
 
@@ -22,33 +21,34 @@ char *token;
 /****************************************************************
 printString(int depth, char* token)
  ------------
- c:         The current character in the input stream from the keyboard.
- lookahead: Set to 1 iff the previous call to getToken() required
- looking ahead.
- TAB_LINE:  Set value of a tab line for list indents.
- depth:       Keeps track of how deep the list is.
+Private helper method to print the given token at the correct depth.
+The method takes the depth, which keeps track of how many lists
+ inside of lists the string is, and token, which is the given
+ token that will be printed.
  ****************************************************************/
 
 void printString(int depth, char* token){
     
+    // Prints ")" with no "S_Expression"
     if(!strcmp(token, ")")){
         for(int x=0; x<depth; x++){
-            printf("     ");
+            printf("     ");            // tab line
         }printf("%s\n", token);
     }
     
+    // Prints S_Expression with either "(" or the given token
     else{
         for(int x=0; x<depth; x++){
-            printf("     ");
+            printf("     ");            // tab line
         } printf("S_Expression \n");
         
         if(!strcmp(token, "(")){
             for(int x=0; x<depth; x++){
-                printf("     ");
+                printf("     ");        // tab line
             }
         }else{
             for(int x=0; x<depth+1; x++){
-                printf("     ");
+                printf("     ");        // tab line
             }
         }
         printf("%s\n", token);
@@ -70,6 +70,14 @@ void printString(int depth, char* token){
  if found, return "#t" or "#f", else abort
  (4) Look for other collections of characters,
  scan for entire symbol up to ( or ()
+ 
+ s_expr(int depth)
+ s_expr ultimately prints the input string seperated into different
+ tokens and listed by what list the token is inside (depth). This
+ will look similar to a parse tree.
+ s_expres() is a simple recursive method that looks for "(" & ")"
+ and then different characters: #t, #f, /', (), or some word.
+
  ****************************************************************/
 
 void s_expr(int depth) {
@@ -78,42 +86,21 @@ void s_expr(int depth) {
         printString(depth, token);
         strcpy(token, getToken());
         s_expr(depth+1);
-        while(strcmp(token, ")")){
-            s_expr(depth+1);
-        }
-        printString(depth, token);
-        if(depth != 0) strcpy(token, getToken());
-    }
-    
-    else if(!strcmp(token, "()")){
-        printString(depth, token);
-        if(depth != 0) strcpy(token, getToken());
-    }
-    else if(!strcmp(token, "#t")){
-        printString(depth, token);
-        if(depth != 0) strcpy(token, getToken());
-    }
-    else if(!strcmp(token, "#f")){
-        printString(depth, token);
-        if(depth != 0) strcpy(token, getToken());
-    }
-    else if(!strcmp(token, "\'")){
+        
+        while(strcmp(token, ")")) s_expr(depth+1);
         printString(depth, token);
         if(depth != 0) strcpy(token, getToken());
     }
     else{
+        //accounts for #t, #f, /', (), or some word.
         printString(depth, token);
         if(depth != 0) strcpy(token, getToken());
     }
     
-    
-    if (depth == 0){
-        printf("\n");
-        printf("scheme> ");
-    }
+    //prints scheme after each parse tree is printed
+    if (depth == 0) printf("\nscheme> ");
     
 }
-
 
 void S_Expression(){
     token = (char *) calloc(20, sizeof(char));
