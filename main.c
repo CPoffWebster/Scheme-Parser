@@ -23,6 +23,7 @@ int main(){
     
     while(free){
         S_Expression();
+        printf("\nscheme> ");
     }
     
     return 0;

@@ -17,7 +17,7 @@
 //Token stores the most recent "token" viewed by lexer.c
 char *token;
 
-//test
+
 /****************************************************************
 printString(int depth, char* token)
  ------------
@@ -55,6 +55,19 @@ void printString(int depth, char* token){
     }
 }
 
+/****************************************************************
+ printList()
+ given a pointer to such a cons-cell structure,
+ will print out the list in parenthesized form.
+ 
+ 
+ ****************************************************************/
+
+void printList(){
+    
+    
+}
+
 
 /****************************************************************
  s_expr(int depth)
@@ -82,9 +95,6 @@ void s_expr(int depth) {
         printString(depth, token);
         if(depth != 0) strcpy(token, getToken());
     }
-    
-    //prints scheme after each parse tree is printed
-    if (depth == 0) printf("\nscheme> ");
     
 }
 
