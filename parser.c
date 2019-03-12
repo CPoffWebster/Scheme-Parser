@@ -21,8 +21,8 @@ char *token;
 /****************************************************************
 printString(int depth, char* token)
  ------------
-Private helper method to print the given token at the correct depth.
-The method takes the depth, which keeps track of how many lists
+ Private helper method to print the given token at the correct depth.
+ The method takes the depth, which keeps track of how many lists
  inside of lists the string is, and token, which is the given
  token that will be printed.
  ****************************************************************/
@@ -57,20 +57,6 @@ void printString(int depth, char* token){
 
 
 /****************************************************************
- s_expr(int depth)
- implementation notes: The function works by getting
- the first character, in case the previous call required lookahead,
- then skipping over whitespace. The main part is the "if" statement
- that handles 4 cases:
- (1) Leading char is ")" or "'" return, no lookahead
- (2) Leading char is "(" scan to find ")",
- if ")" found, no lookahead, return "()",
- if not found, lookahead=true
- (3) #: lookahead for t or f, lookahead=false,
- if found, return "#t" or "#f", else abort
- (4) Look for other collections of characters,
- scan for entire symbol up to ( or ()
- 
  s_expr(int depth)
  s_expr ultimately prints the input string seperated into different
  tokens and listed by what list the token is inside (depth). This
