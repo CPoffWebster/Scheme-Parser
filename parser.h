@@ -21,7 +21,25 @@
  from the previously built getToken() as tested by lextester.c.
  
 */
-
 void S_Expression();
+
+
+/****************************************************************
+ Function: printString
+ --------------------
+ prints the parse tree
+ 
+ */
+void printString(int depth, char* token);
+
+
+/****************************************************************
+ Function: printList
+ --------------------
+ Prints a list of cons cells
+ 
+ */
+void printList();
+
 
 #endif
