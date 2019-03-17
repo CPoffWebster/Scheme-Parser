@@ -90,9 +90,9 @@ void printString(int depth, char* token){
 void printList(List list, int startBool){
     
     if(list != NULL){
-        if(strcmp(list->symbol, "")){   // symbol cell
+        if(strcmp(list->symbol, "")){       // symbol cell
             printf("%s", list->symbol);
-        }else{                          // cons cell
+        }else{                              // cons cell
             if(startBool) printf("(");
             
             if(list->first != NULL){        // first (recursion)
@@ -140,6 +140,10 @@ List s_expr(int depth) {
     else if(!strcmp(token, "()")){
         local = createCell("#f");
     }
+    else if(!strcmp(token, "\'")){
+        printf("FIX ME PLZZZZZ");
+        
+    }
     else{
         local = createCell(token);
     }
@@ -150,7 +154,6 @@ List s_expr(int depth) {
 
 
 void S_Expression(){
-    
     token = (char *) calloc(20, sizeof(char));
     startTokens(20);
     strcpy(token, getToken());
