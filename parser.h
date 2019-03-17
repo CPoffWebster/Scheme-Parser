@@ -10,6 +10,22 @@
 #include <stdlib.h>
 #include "lexer.h"
 
+
+/****************************************************************
+ Data Structure: List
+ --------------------
+ List is a data structure that holds cells. Cells are created using
+ a symbol, a first element, and a rest element. Symbol simply holds
+ the token inside the cell, while first and rest are linked to other
+ cells within the list.
+ 
+ */
+typedef struct cell{
+    char *symbol;
+    struct cell *first;
+    struct cell *rest;
+}*List;
+
 /****************************************************************
  Function: S_Expression()
  --------------------
@@ -27,7 +43,7 @@ void S_Expression();
 /****************************************************************
  Function: printString
  --------------------
- prints the parse tree
+ Prints the parse tree.
  
  */
 void printString(int depth, char* token);
@@ -36,10 +52,11 @@ void printString(int depth, char* token);
 /****************************************************************
  Function: printList
  --------------------
- Prints a list of cons cells
+ Prints the list of cells accounting for both cons cell and
+ symbol cells.
  
  */
-void printList();
+void printList(List list, int depth);
 
 
 #endif

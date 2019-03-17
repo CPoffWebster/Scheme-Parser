@@ -18,42 +18,34 @@
 char *token;
 
 
-// STRUCT CELL
-typedef struct cell{
-    char *symbol;
-    struct cell *first;
-    struct cell *rest;
-};
-typedef struct cell Cell;
-
-// STRUCT LIST - for cons
-struct list{
-    Cell *startList;
-};
-typedef struct list List;
-
-
 /****************************************************************
  createCell()
- initializes a new cell
+ Initializes a new cell
+ This cell is created as a symbol-cell with both first/rest NULL,
+ but is updated to be a cons-cell if needed within the program.
  ****************************************************************/
 
-static Cell *createCell(){
+List createCell(char* symbol){
     
-    Cell *newCell = (Cell*) malloc(sizeof(Cell*));
-    
+    List newCell = (List) malloc(sizeof(struct cell));
     if(newCell == NULL){
         printf("Out of memory!\n");
         exit(1);
     }
-    newCell->symbol = "";
+    
+    if(symbol == NULL){     //symbol not given
+        newCell->symbol = "";
+    }else{                  //symbol given
+        newCell->symbol = malloc(sizeof(char)*strlen(symbol) + 1);
+        strcpy(newCell->symbol, symbol);
+    }
     newCell->first = NULL;
     newCell->rest = NULL;
     return newCell;
 }
 
 /****************************************************************
-printString(int depth, char* token)
+ printString(int depth, char* token)
  ------------
  Private helper method to print the given token at the correct depth.
  The method takes the depth, which keeps track of how many lists
@@ -95,71 +87,25 @@ void printString(int depth, char* token){
  will print out the list in parenthesized form.
  ****************************************************************/
 
-void printList(Cell* test){
+void printList(List list, int startBool){
     
-    /*printf("test\n");
-    
-    if(test->rest == NULL){
-        printf("WARNING");
-    }
-    printf("%s", test->symbol);*/
-    
-    //symbol, first, rest
-    
-    
-    /*if(test->first != NULL){
-        printf("test");
-        test = test->first;
-        printf("%s", test->symbol);
-    }
-    if(test->rest != NULL){
-        printf("POOP");
-        test = test->rest;
-    }else{
-        printf("warning");
-        //break;
-    }*/
-    /*
-    if(!strcmp(test->symbol, "")){
-        printf("say hello\n");
-        if(test->first != NULL){
-            //printList(test->first);
-            test = test->first;
-            printf("test\n");
+    if(list != NULL){
+        if(strcmp(list->symbol, "")){   // symbol cell
+            printf("%s", list->symbol);
+        }else{                          // cons cell
+            if(startBool) printf("(");
             
-            if(test->first == NULL && test->rest == NULL){
-                printf("%s", test->symbol);
+            if(list->first != NULL){        // first (recursion)
+                printList(list->first, 1);
+            }
+            
+            if(list->rest != NULL){         // rest (recursion)
+                printf(" ");
+                printList(list->rest, 0);
             }else{
-                printf("NOPE");
+                printf(")");
             }
         }
-    }*/
-    Cell* temp;
-    temp = createCell();
-    
-    while(!strcmp(test->symbol, "")){
-        if(test->first != NULL && test->rest != NULL){
-            printf("(");
-        }
-        
-        if(test->first != NULL){    //first (recursion)
-            temp = test->first;
-            printList(temp);
-        }
-        
-        if(test->rest != NULL){     //rest (iteration)
-            temp = test->rest;
-            free(test);
-            printList(temp);
-            //free(test);
-            //test = temp;
-        }else{
-            printf(")");
-            return;
-        }
-    }
-    if(test->first == NULL && test->rest == NULL){
-        printf("%s", test->symbol);
     }
 }
 
@@ -171,41 +117,34 @@ void printList(Cell* test){
  will look similar to a parse tree.
  s_expres() is a simple recursive method that looks for "(" & ")"
  and then different characters: #t, #f, /', (), or some word.
-
+ 
  ****************************************************************/
 
-Cell *s_expr(int depth) {
+List s_expr(int depth) {
     
-    Cell* local;
-    Cell* temp;
-    //local = createCell();
-    //temp = createCell();
+    List local, temp;
     
     if(!strcmp(token, "(")){
         strcpy(token, getToken());
-        //s_expr(depth+1);
-        local = createCell();
+        local = createCell(NULL);
         local->first = s_expr(depth+1);
         temp = local;
         
         while(strcmp(token, ")")){
-            //s_expr(depth+1);
-            temp->rest = createCell();
+            temp->rest = createCell(NULL);
             temp = temp->rest;
             temp->first = s_expr(depth+1);
         }
         temp->rest = NULL;
-        if(depth != 0) strcpy(token, getToken());
+    }
+    else if(!strcmp(token, "()")){
+        local = createCell("#f");
     }
     else{
-        //accounts for #t, #f, /', (), or some word.
-        //printString(depth, token);
-        local = createCell();
-        local->symbol = token;
-        //local->first = NULL;
-        //local->rest = NULL;
-        if(depth != 0) strcpy(token, getToken());
+        local = createCell(token);
     }
+    
+    if(depth != 0) strcpy(token, getToken());
     return local;
 }
 
@@ -217,35 +156,6 @@ void S_Expression(){
     strcpy(token, getToken());
     int depth = 0;
     
-    
-    Cell* createList;
-    createList = s_expr(depth);
-    
-    List* buildList;
-    buildList = createList;
-    
-    printList(buildList);
-    
-    
-    
-    
+    List buildList = s_expr(depth);
+    printList(buildList, 1);
 }
-
-/*
- Cell* test1;
- Cell* test2;
- 
- test1=createCell();
- test2=createCell();
- 
- test1->symbol = "";
- test1->first = test2;
- test1->rest = NULL;
- 
- test2->symbol = "a";
- test2->first = NULL;
- test2->rest = NULL;
- 
- List* test = test1;
- 
- printList(test1);*/
