@@ -19,7 +19,7 @@ char *token;
 
 
 // STRUCT CELL
-struct cell{
+typedef struct cell{
     char *symbol;
     struct cell *first;
     struct cell *rest;
@@ -28,7 +28,7 @@ typedef struct cell Cell;
 
 // STRUCT LIST - for cons
 struct list{
-    Cell *consCell;
+    Cell *startList;
 };
 typedef struct list List;
 
@@ -38,7 +38,7 @@ typedef struct list List;
  initializes a new cell
  ****************************************************************/
 
-static Cell *createCell(char* token){
+static Cell *createCell(){
     
     Cell *newCell = (Cell*) malloc(sizeof(Cell*));
     
@@ -46,7 +46,7 @@ static Cell *createCell(char* token){
         printf("Out of memory!\n");
         exit(1);
     }
-    newCell->symbol = token;
+    newCell->symbol = "";
     newCell->first = NULL;
     newCell->rest = NULL;
     return newCell;
@@ -96,21 +96,71 @@ void printString(int depth, char* token){
  ****************************************************************/
 
 void printList(Cell* test){
-    Cell* temp;
-    Cell* temp2;
-    char* printme;
     
-    if(test->first == NULL && test->rest == NULL){
-        printme = test->symbol;
-        printf("%s", printme);
+    /*printf("test\n");
+    
+    if(test->rest == NULL){
+        printf("WARNING");
     }
+    printf("%s", test->symbol);*/
     
-    temp = test->first;
-    printList(temp);
+    //symbol, first, rest
     
-    temp2 = test->rest;
-    printList(temp2);
     
+    /*if(test->first != NULL){
+        printf("test");
+        test = test->first;
+        printf("%s", test->symbol);
+    }
+    if(test->rest != NULL){
+        printf("POOP");
+        test = test->rest;
+    }else{
+        printf("warning");
+        //break;
+    }*/
+    /*
+    if(!strcmp(test->symbol, "")){
+        printf("say hello\n");
+        if(test->first != NULL){
+            //printList(test->first);
+            test = test->first;
+            printf("test\n");
+            
+            if(test->first == NULL && test->rest == NULL){
+                printf("%s", test->symbol);
+            }else{
+                printf("NOPE");
+            }
+        }
+    }*/
+    Cell* temp;
+    temp = createCell();
+    
+    while(!strcmp(test->symbol, "")){
+        if(test->first != NULL && test->rest != NULL){
+            printf("(");
+        }
+        
+        if(test->first != NULL){    //first (recursion)
+            temp = test->first;
+            printList(temp);
+        }
+        
+        if(test->rest != NULL){     //rest (iteration)
+            temp = test->rest;
+            free(test);
+            printList(temp);
+            //free(test);
+            //test = temp;
+        }else{
+            printf(")");
+            return;
+        }
+    }
+    if(test->first == NULL && test->rest == NULL){
+        printf("%s", test->symbol);
+    }
 }
 
 
@@ -128,62 +178,74 @@ Cell *s_expr(int depth) {
     
     Cell* local;
     Cell* temp;
-    local = createCell(token);
-    temp = createCell(token);
+    //local = createCell();
+    //temp = createCell();
     
     if(!strcmp(token, "(")){
         strcpy(token, getToken());
         //s_expr(depth+1);
+        local = createCell();
         local->first = s_expr(depth+1);
         temp = local;
         
         while(strcmp(token, ")")){
             //s_expr(depth+1);
-            temp->rest = createCell(token);
+            temp->rest = createCell();
             temp = temp->rest;
             temp->first = s_expr(depth+1);
         }
         temp->rest = NULL;
-        strcpy(token, getToken());
-        //if(depth != 0) temp->rest = NULL; //strcpy(token, getToken());
+        if(depth != 0) strcpy(token, getToken());
     }
     else{
         //accounts for #t, #f, /', (), or some word.
         //printString(depth, token);
+        local = createCell();
+        local->symbol = token;
+        //local->first = NULL;
+        //local->rest = NULL;
         if(depth != 0) strcpy(token, getToken());
     }
     return local;
 }
 
-// allocate nodes local and temp
-/*
-if (token == '(') {
-    getNextToken();
-    local->first = S_expr();    // recursion!
-    temp = local;
-    while (token != ")")
-    {
-        temp->rest = allocate a new node
-        temp = temp->rest;
-        temp->first = S_expr();   // recursion!
-    }
-    temp->rest = NULL;  // the end of the list, make sure it's null terminated
-}
-else
-{
-    // deal with symbols, #t, #f, etc...
-}*/
 
 void S_Expression(){
+    
     token = (char *) calloc(20, sizeof(char));
     startTokens(20);
     strcpy(token, getToken());
     int depth = 0;
-    Cell* printme;
-    printme = s_expr(depth);
-    //List* print;
-    //print->consCell = s_expr(depth);
-    printList(printme);
+    
+    
+    Cell* createList;
+    createList = s_expr(depth);
+    
+    List* buildList;
+    buildList = createList;
+    
+    printList(buildList);
+    
+    
+    
     
 }
 
+/*
+ Cell* test1;
+ Cell* test2;
+ 
+ test1=createCell();
+ test2=createCell();
+ 
+ test1->symbol = "";
+ test1->first = test2;
+ test1->rest = NULL;
+ 
+ test2->symbol = "a";
+ test2->first = NULL;
+ test2->rest = NULL;
+ 
+ List* test = test1;
+ 
+ printList(test1);*/
