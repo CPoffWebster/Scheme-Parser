@@ -144,24 +144,26 @@ List s_expr(int depth) {
             temp->first = s_expr(depth+1);
         }
         temp->rest = NULL;
+        if(depth != 0) strcpy(token, getToken());
     }
     else if(!strcmp(token, "()")){          // returns () as #f
         local = createCell("#f");
+        if(depth != 0) strcpy(token, getToken());
     }
     else if(!strcmp(token, "\'")){          // returns '(a) as (quote (a))
+
         local = createCell(NULL);
         local->first = createCell("quote");
-        temp = local;
         strcpy(token, getToken());
         local->rest = createCell(NULL);
-        temp = temp->rest;
+        temp = local->rest;
         temp->first = s_expr(depth);
     }
     else{                                   // creates symbol cell with token
         local = createCell(token);
+        if(depth != 0) strcpy(token, getToken());
     }
     
-    if(depth != 0) strcpy(token, getToken());
     return local;
 }
 
