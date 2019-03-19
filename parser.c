@@ -20,9 +20,13 @@ char *token;
 
 /****************************************************************
  createCell()
- Initializes a new cell
- This cell is created as a symbol-cell with both first/rest NULL,
- but is updated to be a cons-cell if needed within the program.
+ Initializes a new cell.
+ createCell() initializes both cons-cells and symbol-cells.
+ When createCell() is called it is called as either (NULL) or with
+ a (token). (NULL) initializes the symbol cell, while (token)
+ initializes the symbol-cell. Both first and rest are initialized
+ as NULL. This is final for symbol-cells, but will be updated as
+ needed for cons-cells within s_expr().
  ****************************************************************/
 
 List createCell(char* symbol){
@@ -33,13 +37,13 @@ List createCell(char* symbol){
         exit(1);
     }
     
-    if(symbol == NULL){     //symbol not given
+    if(symbol == NULL){             // symbol not given (cons cell)
         newCell->symbol = "";
-    }else{                  //symbol given
+    }else{                          // symbol given (symbol cell)
         newCell->symbol = malloc(sizeof(char)*strlen(symbol) + 1);
         strcpy(newCell->symbol, symbol);
     }
-    newCell->first = NULL;
+    newCell->first = NULL;          // initializes cell as a symbol cell
     newCell->rest = NULL;
     return newCell;
 }
@@ -83,8 +87,10 @@ void printString(int depth, char* token){
 
 /****************************************************************
  printList()
- given a pointer to such a cons-cell structure,
- will print out the list in parenthesized form.
+ Given a pointer to a cons-cell structure, printList() will print
+ out the list in parenthesized form by analyzing if the cell is a
+ symbol cell or a cons cell. If the cell is a cons cell than
+ printList() will make recursive calls for both first and rest.
  ****************************************************************/
 
 void printList(List list, int startBool){
@@ -112,11 +118,13 @@ void printList(List list, int startBool){
 
 /****************************************************************
  s_expr(int depth)
- s_expr ultimately prints the input string seperated into different
- tokens and listed by what list the token is inside (depth). This
- will look similar to a parse tree.
- s_expres() is a simple recursive method that looks for "(" & ")"
- and then different characters: #t, #f, /', (), or some word.
+ Given a collection of scheme syntax, s_expr() will creates a List
+ of cells that are built with both a symbol, first, and rest. This
+ method is the process of building the List given the scheme input.
+ The program has a process of creating both symbol-cells and cons-
+ cells by using the helper method createCell(). This program supports
+ token "()" -> "#f" and "\'" -> "quote". s_expr() uses recursion
+ to complete this entire process.
  
  ****************************************************************/
 
@@ -124,7 +132,7 @@ List s_expr(int depth) {
     
     List local, temp;
     
-    if(!strcmp(token, "(")){
+    if(!strcmp(token, "(")){                // given s_expr from class
         strcpy(token, getToken());
         local = createCell(NULL);
         local->first = s_expr(depth+1);
@@ -137,14 +145,19 @@ List s_expr(int depth) {
         }
         temp->rest = NULL;
     }
-    else if(!strcmp(token, "()")){
+    else if(!strcmp(token, "()")){          // returns () as #f
         local = createCell("#f");
     }
-    else if(!strcmp(token, "\'")){
-        printf("FIX ME PLZZZZZ");
-        
+    else if(!strcmp(token, "\'")){          // returns '(a) as (quote (a))
+        local = createCell(NULL);
+        local->first = createCell("quote");
+        temp = local;
+        strcpy(token, getToken());
+        local->rest = createCell(NULL);
+        temp = temp->rest;
+        temp->first = s_expr(depth);
     }
-    else{
+    else{                                   // creates symbol cell with token
         local = createCell(token);
     }
     
@@ -157,8 +170,7 @@ void S_Expression(){
     token = (char *) calloc(20, sizeof(char));
     startTokens(20);
     strcpy(token, getToken());
-    int depth = 0;
     
-    List buildList = s_expr(depth);
-    printList(buildList, 1);
+    List buildList = s_expr(0);     // depth starts at 0
+    printList(buildList, 1);        // startBool starts as True
 }

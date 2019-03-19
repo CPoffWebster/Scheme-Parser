@@ -20,11 +20,13 @@
  cells within the list.
  
  */
-typedef struct cell{
-    char *symbol;
-    struct cell *first;
-    struct cell *rest;
-}*List;
+
+ struct cell{
+     char *symbol;
+     struct cell *first;
+     struct cell *rest;
+ }; typedef struct cell *List;
+
 
 /****************************************************************
  Function: S_Expression()
