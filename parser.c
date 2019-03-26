@@ -168,6 +168,65 @@ List s_expr(int depth) {
 }
 
 
+/****************************************************************
+ eval(List list)
+ This method evaluates a given list in scheme. This functional
+ evaluates the internal representation of the list and can perform
+ functions by calling methods: quote, car, cdr, symbol? and cons
+ 
+ ****************************************************************/
+List temp, temp2;
+
+List eval(List list){
+    if(list->first != NULL) temp = list->first;
+    if(list->rest != NULL) temp2 = list->rest;
+    
+    if(!strcmp(temp->symbol, "quote")){
+        return quoteFn(eval(temp2->first));
+    }
+    if(!strcmp(temp->symbol, "car")){
+        return carFn(eval(temp2->first));
+    }
+    if(!strcmp(temp->symbol, "cdr")){
+        return cdrFn(eval(temp2->first));
+    }
+    if(!strcmp(temp->symbol, "symbol?")){
+        printf("SYMBOL? HERE\n");
+    }
+    if(!strcmp(temp->symbol, "cons")){
+        printf("CONS HERE\n");
+    }
+    
+    if(!strcmp(temp->symbol, "exit")){
+        printf("Have a nice day!\n");
+        exit(0);
+    }
+    return list;
+}
+
+// returns the first element of a list
+List carFn(List list){
+    return list->first;
+}
+// Returns the rest element of a list
+List cdrFn(List list){
+    return list->rest;
+}
+// Parses list as a single element
+List quoteFn(List list){
+    return list;
+}
+// Returns #t if element is a symbol, else #f
+List symbolFn(List list){
+    return 0;
+}
+// Constructs a list given two or more elements
+List consFn(List list1, List list2){
+    return 0;
+}
+
+
+
 void S_Expression(){
     token = (char *) calloc(20, sizeof(char));
     startTokens(20);
@@ -175,4 +234,12 @@ void S_Expression(){
     
     List buildList = s_expr(0);     // depth starts at 0
     printList(buildList, 1);        // startBool starts as True
+    printf("\n");
+    printList( eval(buildList), 1);
+    
 }
+
+
+
+// cons cell simply points from the first element over to the second element
+// #f will be translated into a null-pointer

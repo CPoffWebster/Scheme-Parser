@@ -21,7 +21,7 @@ int main(){
     printf("\nscheme> ");
     
     
-    while(free){
+    while(1){
         S_Expression();
         printf("\nscheme> ");
     }

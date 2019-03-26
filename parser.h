@@ -61,4 +61,52 @@ void printString(int depth, char* token);
 void printList(List list, int depth);
 
 
+/****************************************************************
+ Function: eval
+ --------------------
+ This method evaluates a given list in scheme.
+ 
+ */
+List eval(List list);
+
+/****************************************************************
+ Function: carFn
+ --------------------
+ Returns the first element of a list
+ 
+ */
+List carFn(List list);
+
+/****************************************************************
+ Function: cdrFn
+ --------------------
+ Returns the rest element of a list
+ 
+ */
+List cdrFn(List list);
+
+/****************************************************************
+ Function: quoteFn
+ --------------------
+ Parses list as a single element
+ 
+ */
+List quoteFn(List list);
+
+/****************************************************************
+ Function: symbolFn
+ --------------------
+ Returns #t if element is a symbol, else #f
+ 
+ */
+List symbolFn(List list);
+
+/****************************************************************
+ Function: consFn
+ --------------------
+ Constructs a list given two or more elements
+ 
+ */
+List consFn(List list1, List list2);
+
 #endif

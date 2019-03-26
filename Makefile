@@ -8,7 +8,7 @@
 
 # Executable file "scheme" depends on main.o and parser.o
 scheme: main.o parser.o lexer.o
-	gcc -o exec main.o parser.o lexer.o
+	gcc -o scheme main.o parser.o lexer.o
 
 main.o: main.c
 	gcc -c main.c
