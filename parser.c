@@ -191,10 +191,12 @@ List eval(List list){
         return cdrFn(eval(temp2->first));
     }
     if(!strcmp(temp->symbol, "symbol?")){
-        printf("SYMBOL? HERE\n");
+        //return symbolFn(eval(temp2->first));
+        //printf("SYMBOL? HERE\n");
     }
     if(!strcmp(temp->symbol, "cons")){
         printf("CONS HERE\n");
+        
     }
     
     if(!strcmp(temp->symbol, "exit")){
@@ -204,6 +206,10 @@ List eval(List list){
     return list;
 }
 
+// Parses list as a single element
+List quoteFn(List list){
+    return list;
+}
 // returns the first element of a list
 List carFn(List list){
     return list->first;
@@ -212,18 +218,20 @@ List carFn(List list){
 List cdrFn(List list){
     return list->rest;
 }
-// Parses list as a single element
-List quoteFn(List list){
-    return list;
-}
 // Returns #t if element is a symbol, else #f
-List symbolFn(List list){
+char symbolFn(List list){
+    /*temp = list->first;
+    if(temp->first == NULL && temp->rest == NULL) printf("#t");
+    else printf("()");*/
     return 0;
 }
 // Constructs a list given two or more elements
 List consFn(List list1, List list2){
     return 0;
 }
+
+// cons cell simply points from the first element over to the second element
+// #f will be translated into a null-pointer
 
 
 
@@ -236,10 +244,4 @@ void S_Expression(){
     printList(buildList, 1);        // startBool starts as True
     printf("\n");
     printList( eval(buildList), 1);
-    
 }
-
-
-
-// cons cell simply points from the first element over to the second element
-// #f will be translated into a null-pointer

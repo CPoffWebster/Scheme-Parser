@@ -70,6 +70,14 @@ void printList(List list, int depth);
 List eval(List list);
 
 /****************************************************************
+ Function: quoteFn
+ --------------------
+ Parses list as a single element
+ 
+ */
+List quoteFn(List list);
+
+/****************************************************************
  Function: carFn
  --------------------
  Returns the first element of a list
@@ -86,20 +94,12 @@ List carFn(List list);
 List cdrFn(List list);
 
 /****************************************************************
- Function: quoteFn
- --------------------
- Parses list as a single element
- 
- */
-List quoteFn(List list);
-
-/****************************************************************
  Function: symbolFn
  --------------------
  Returns #t if element is a symbol, else #f
  
  */
-List symbolFn(List list);
+char symbolFn(List list);
 
 /****************************************************************
  Function: consFn
