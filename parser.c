@@ -175,39 +175,48 @@ List s_expr(int depth) {
  functions by calling methods: quote, car, cdr, symbol? and cons
  
  ****************************************************************/
-List temp, temp2;
+List temp, temp2, temp3;
 
 List eval(List list){
-    if(list->first != NULL) temp = list->first;
-    if(list->rest != NULL) temp2 = list->rest;
-    
-    if(!strcmp(temp->symbol, "quote")){
-        return quoteFn(eval(temp2->first));
-    }
-    if(!strcmp(temp->symbol, "car")){
-        return carFn(eval(temp2->first));
-    }
-    if(!strcmp(temp->symbol, "cdr")){
-        return cdrFn(eval(temp2->first));
-    }
-    if(!strcmp(temp->symbol, "symbol?")){
-        //return symbolFn(eval(temp2->first));
-        //printf("SYMBOL? HERE\n");
-    }
-    if(!strcmp(temp->symbol, "cons")){
-        printf("CONS HERE\n");
-        
-    }
-    
-    if(!strcmp(temp->symbol, "exit")){
-        printf("Have a nice day!\n");
-        exit(0);
+    if(carFn(list) != NULL){
+        if(carFn(list)->symbol != NULL){
+            
+            char* symbol = carFn(list)->symbol;             //create symbol char
+            
+            if(!strcmp(symbol, "exit")){
+                printf("Have a nice day!\n");
+                exit(0);
+            }
+            
+            if (cdrFn(list) != NULL && carFn(cdrFn(list)) != NULL) {    // so that temp can be created
+                temp = eval(carFn(cdrFn(list)));            // List of 2nd conCell List
+            }
+                if(!strcmp(symbol, "quote")){
+                    return quoteFn(carFn(cdrFn(list)));     // no eval() recursion
+                }
+                if(!strcmp(symbol, "car")){
+                    return carFn(temp);
+                }
+                if(!strcmp(symbol, "cdr")){
+                    return cdrFn(temp);
+                }
+                if(!strcmp(symbol, "symbol?")){
+                    return symbolFn(temp);
+                }
+                if(!strcmp(symbol, "cons")){
+                    // the second list is one cdr deeper than temp (defined above)
+                    return consFn(temp, eval(carFn(cdrFn(cdrFn(list)))));
+                }
+        }
     }
     return list;
 }
 
 // Parses list as a single element
 List quoteFn(List list){
+    if(list->symbol != NULL && !strcmp(list->symbol, "()")){
+        return NULL;
+    }
     return list;
 }
 // returns the first element of a list
@@ -219,19 +228,36 @@ List cdrFn(List list){
     return list->rest;
 }
 // Returns #t if element is a symbol, else #f
-char symbolFn(List list){
-    /*temp = list->first;
-    if(temp->first == NULL && temp->rest == NULL) printf("#t");
-    else printf("()");*/
-    return 0;
+List symbolFn(List list){
+    //if it is a list (more than one element) than return false
+    if(list->symbol != NULL && cdrFn(list) == NULL){
+        return createCell("#t");
+    }
+    else return createCell("()");
 }
 // Constructs a list given two or more elements
 List consFn(List list1, List list2){
-    return 0;
-}
+    List consCell = createCell(NULL);
 
-// cons cell simply points from the first element over to the second element
-// #f will be translated into a null-pointer
+    // IF STATEMENT check to see if 1 has #f
+    if(symbolFn(list1) != NULL && !strcmp(list1->symbol, "#f")){
+        // both lists are #f
+        if(symbolFn(list2) != NULL && !strcmp(list2->symbol, "#f")){
+            return createCell("(())");
+        }
+        consCell->first = list2;
+        return consCell;
+    }
+    // IF STATEMENT check to see if 2 has #f
+    if(symbolFn(list1) != NULL && !strcmp(list2->symbol, "#f")){
+        consCell->first = list1;
+        return consCell;
+    }
+    consCell->first = list1;
+    consCell->rest = list2;
+    
+    return consCell;
+}
 
 
 
@@ -241,7 +267,7 @@ void S_Expression(){
     strcpy(token, getToken());
     
     List buildList = s_expr(0);     // depth starts at 0
-    printList(buildList, 1);        // startBool starts as True
-    printf("\n");
+    //printList(buildList, 1);        // startBool starts as True
     printList( eval(buildList), 1);
+    printf("\n");
 }

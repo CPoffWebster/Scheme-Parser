@@ -99,7 +99,7 @@ List cdrFn(List list);
  Returns #t if element is a symbol, else #f
  
  */
-char symbolFn(List list);
+List symbolFn(List list);
 
 /****************************************************************
  Function: consFn
