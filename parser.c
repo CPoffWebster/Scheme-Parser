@@ -181,7 +181,7 @@ List eval(List list){
     if(carFn(list) != NULL){
         if(carFn(list)->symbol != NULL){
             
-            char* symbol = carFn(list)->symbol;             //create symbol char
+            char* symbol = carFn(list)->symbol;         //create symbol char
             
             if(!strcmp(symbol, "exit")){
                 printf("Have a nice day!\n");
