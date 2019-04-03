@@ -239,16 +239,16 @@ List symbolFn(List list){
 List consFn(List list1, List list2){
     List consCell = createCell(NULL);
 
-    // IF STATEMENT check to see if 1 has #f
+    // check to see if List1 has #f
     if(symbolFn(list1) != NULL && !strcmp(list1->symbol, "#f")){
-        // both lists are #f
+        // check if both lists are #f
         if(symbolFn(list2) != NULL && !strcmp(list2->symbol, "#f")){
             return createCell("(())");
         }
         consCell->first = list2;
         return consCell;
     }
-    // IF STATEMENT check to see if 2 has #f
+    // check to see if List2 has #f
     if(symbolFn(list1) != NULL && !strcmp(list2->symbol, "#f")){
         consCell->first = list1;
         return consCell;
