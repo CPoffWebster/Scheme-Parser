@@ -139,24 +139,33 @@ int nullFnTF(List list);
  */
 List appendFn(List list1, List list2);
 
-
+// PRIVATE METHOD
+// nullFn except turns true/false values
+int nullFnTF(List list);
 
 /****************************************************************
  Function: equalFn
  --------------------
  Returns #t if its arguments evaluate to the same value and #f otherwise
- ex. (equal? '(a b) '(a b)) returns #t
- ex. (equal? '(a b) '(a (a b))) returns #f
+ This function evaluates if a list is a single symbol to account for the
+ first example and calls equalListFn to evaluate a list (with not other
+ list inside) is equal to another list.
+ ex. (equal? 'a 'b) returns #t
+ ex. (equal? '(a (c) b) '(a (d) b))) returns #f
  
  */
 List equalFn(List list1, List list2);
 
-
+// PRIVATE METHODS
+// evaluates if the list is a single symbol
+int symbolFnTF(List list);
+// evaluates if a list is equal to a list (NO lists inside of lists found)
+int equalListFn(List list1, List list2);
 
 /****************************************************************
  Function: assocFn
  --------------------
- Constructs a list given two or more elements
+ 
  
  */
 List assocFn(char symbol, List list);
@@ -164,7 +173,7 @@ List assocFn(char symbol, List list);
 /****************************************************************
  Function: condFn
  --------------------
- Constructs a list given two or more elements
+ 
  
  */
 List condFn();

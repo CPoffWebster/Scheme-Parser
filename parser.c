@@ -214,6 +214,9 @@ List eval(List list){
             if(!strcmp(symbol, "append")){
                 return appendFn(temp, eval(carFn(cdrFn(cdrFn(list)))));
             }
+            if(!strcmp(symbol, "equal?")){
+                return equalFn(temp, eval(carFn(cdrFn(cdrFn(list)))));
+            }
             
             
         }
@@ -228,14 +231,17 @@ List quoteFn(List list){
     }
     return list;
 }
+
 // returns the first element of a list
 List carFn(List list){
     return list->first;
 }
+
 // Returns the rest element of a list
 List cdrFn(List list){
     return list->rest;
 }
+
 // Returns #t if element is a symbol, else #f
 List symbolFn(List list){
     //if it is a list (more than one element) than return false
@@ -244,6 +250,7 @@ List symbolFn(List list){
     }
     else return createCell("()");
 }
+
 // Constructs a list given two or more elements
 List consFn(List list1, List list2){
     List consCell = createCell(NULL);
@@ -290,11 +297,63 @@ List nullFn(List list){
     }else return createCell("()");
 }
 
-/*equal?. This has two arguments, both s-expressions, and it returns #t if its arguments evaluate to the same value (in the case of lists, the structure returned must be identical) and #f otherwise. This is trickier than it may sound, because it requires a simultaneous navigation of both s-expressions. Recursion is a must! For example,
-(equal? '(a b) '(a b)) returns #t
-(equal? '(a b) '(a (a b))) returns #f   */
+// returns #t if the lists are the same, otherwise () or #f
 List equalFn(List list1, List list2){
-    return 0;
+    
+    // is the list a single symbol
+    if(!symbolFnTF(list1) && !symbolFnTF(list2)){
+        // call the car and cdr of the list
+        if(equalListFn(carFn(list1), carFn(list2)) && equalListFn(cdrFn(list1), cdrFn(list2))){
+            return createCell("#t");
+        }
+    }else{
+        // call just the symbol
+        if(equalListFn(list1, list2)){
+            return createCell("#t");
+        }
+    }
+    printf("not equal\n");
+    return createCell("()");
+}
+//if it is a list call list equalFN
+
+// private fn called by equalFn: evaluates equal? of a list
+int equalListFn(List list1, List list2){
+    // if it is not a list.. make it one
+    if(!symbolFnTF(list1) && !symbolFnTF(list2)){
+        //equalFn(list1, list2);
+        return equalListFn(carFn(list1), carFn(list2)) && equalListFn(cdrFn(list1), cdrFn(list2));
+    }
+    
+    // evaluates a single symbol
+    if(list1 == NULL && list2 == NULL) return 1; // if nothing
+    if(carFn(list1) == NULL){       // if the list is length 1
+        if(carFn(list2) == NULL){
+            if(!strcmp(list1->symbol, list2->symbol)){
+                return 1; // the symbol is equal
+            }else return 0;
+        }else return 0;
+    }
+    
+    // evaluate a list
+    if(!strcmp(carFn(list1)->symbol, carFn(list2)->symbol)){
+        // recursion
+        if(cdrFn(list1) == NULL){
+            if(cdrFn(list2) == NULL){
+                return equalListFn(carFn(list1), carFn(list2)); // recursive call of car
+            }else return 0;
+        }else return equalListFn(cdrFn(list1), cdrFn(list2));   // recursive call of cdr
+    }else return 0;
+    return 1;
+}
+
+// Returns #t if element is a symbol, else #f
+int symbolFnTF(List list){
+    //if it is a list (more than one element) than return false
+    if(list->symbol != NULL && cdrFn(list) == NULL){
+        return 1;
+    }
+    else return 0;
 }
 
 /*assoc. This has two arguments, the first of which is a symbol, the second a so-called "association list" (to be explained in class). It returns the pair associated with the symbol, and #f if the symbol is not the first element of any pair. For example,
