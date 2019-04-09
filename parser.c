@@ -207,6 +207,15 @@ List eval(List list){
                     // the second list is one cdr deeper than temp (defined above)
                     return consFn(temp, eval(carFn(cdrFn(cdrFn(list)))));
                 }
+            
+            if(!strcmp(symbol, "null?")){
+                return nullFn(temp);
+            }
+            if(!strcmp(symbol, "append")){
+                return appendFn(temp, eval(carFn(cdrFn(cdrFn(list)))));
+            }
+            
+            
         }
     }
     return list;
@@ -258,6 +267,50 @@ List consFn(List list1, List list2){
     
     return consCell;
 }
+
+//appends the second list to the end of the first
+List appendFn(List list1, List list2){
+    if(nullFnTF(list1)) return list2;
+    return consFn(carFn(list1), appendFn(cdrFn(list1), list2));
+}
+
+//helper function for appendFn
+int nullFnTF(List list){
+    if(list == NULL) return 1;
+    if(!strcmp(list->symbol, "#f")){
+        return 1;
+    }else return 0;
+}
+
+// returns #t for null lists, otherwise () or #f
+List nullFn(List list){
+    if(list == NULL) return createCell("#t");
+    if(!strcmp(list->symbol, "#f")){
+        return createCell("#t");
+    }else return createCell("()");
+}
+
+/*equal?. This has two arguments, both s-expressions, and it returns #t if its arguments evaluate to the same value (in the case of lists, the structure returned must be identical) and #f otherwise. This is trickier than it may sound, because it requires a simultaneous navigation of both s-expressions. Recursion is a must! For example,
+(equal? '(a b) '(a b)) returns #t
+(equal? '(a b) '(a (a b))) returns #f   */
+List equalFn(List list1, List list2){
+    return 0;
+}
+
+/*assoc. This has two arguments, the first of which is a symbol, the second a so-called "association list" (to be explained in class). It returns the pair associated with the symbol, and #f if the symbol is not the first element of any pair. For example,
+(assoc 'joan '((john smith) (joan doe) (marcia law)))  returns (joan doe)
+(assoc 'john '((john smith) (joan doe) (marcia law)))  returns (john smith)
+(assoc 'jean '((john smith) (joan doe) (marcia law)))  returns #f   */
+List assocFn(char symbol, List list){
+    return 0;
+}
+
+//cond. The multiple-alternative conditional.
+//cond is, as you know, used for flow of control in defining Scheme functions, so it is extremely important that it works properly. (If you want to add the if construct as well, please do.)
+List condFn(){
+    return 0;
+}
+
 
 
 

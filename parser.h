@@ -109,4 +109,66 @@ List symbolFn(List list);
  */
 List consFn(List list1, List list2);
 
+
+/****************************************************************
+ Function: nullFn
+ --------------------
+ returns #t cell if the list is null, otherwise returns () or #f cell
+ 
+ */
+List nullFn(List list);
+
+/****************************************************************
+ Function: nullFnTF
+ --------------------
+ nullFn except turns true/false values, this function is used in
+ the appendFn
+ 
+ */
+int nullFnTF(List list);
+
+/****************************************************************
+ Function: appendFn
+ --------------------
+ appends two lists together
+ This takes two arguments and returns a list that appends the second
+ list to the end of the first.
+ For example(append '(a b c) '(d e f))
+ returns the list (a b c d e f).
+ 
+ */
+List appendFn(List list1, List list2);
+
+
+
+/****************************************************************
+ Function: equalFn
+ --------------------
+ Returns #t if its arguments evaluate to the same value and #f otherwise
+ ex. (equal? '(a b) '(a b)) returns #t
+ ex. (equal? '(a b) '(a (a b))) returns #f
+ 
+ */
+List equalFn(List list1, List list2);
+
+
+
+/****************************************************************
+ Function: assocFn
+ --------------------
+ Constructs a list given two or more elements
+ 
+ */
+List assocFn(char symbol, List list);
+
+/****************************************************************
+ Function: condFn
+ --------------------
+ Constructs a list given two or more elements
+ 
+ */
+List condFn();
+
+
+
 #endif
