@@ -217,6 +217,9 @@ List eval(List list){
             if(!strcmp(symbol, "equal?")){
                 return equalFn(temp, eval(carFn(cdrFn(cdrFn(list)))));
             }
+            if(!strcmp(symbol, "assoc")){
+                return assocFn(temp, eval(carFn(cdrFn(cdrFn(list)))));
+            }
             
             
         }
@@ -356,12 +359,18 @@ int symbolFnTF(List list){
     else return 0;
 }
 
-/*assoc. This has two arguments, the first of which is a symbol, the second a so-called "association list" (to be explained in class). It returns the pair associated with the symbol, and #f if the symbol is not the first element of any pair. For example,
-(assoc 'joan '((john smith) (joan doe) (marcia law)))  returns (joan doe)
-(assoc 'john '((john smith) (joan doe) (marcia law)))  returns (john smith)
-(assoc 'jean '((john smith) (joan doe) (marcia law)))  returns #f   */
-List assocFn(char symbol, List list){
-    return 0;
+//returns the pair associated with the symbol, else #f
+List assocFn(List symbolList, List list){
+    //if list is comparing to one elmt
+    if(carFn(list) == NULL){
+        if(!strcmp(symbolList->symbol, list->symbol)) return list;
+        else return createCell("()");
+    }// if first element is equal to the symbol
+    if(!strcmp(symbolList->symbol, carFn(carFn(list))->symbol)) return carFn(list);
+    else{
+        if(cdrFn(list) != NULL) return assocFn(symbolList, cdrFn(list)); // if more elements, check them
+        else return createCell("()");       // if no more elements, return false
+    }
 }
 
 //cond. The multiple-alternative conditional.

@@ -165,10 +165,14 @@ int equalListFn(List list1, List list2);
 /****************************************************************
  Function: assocFn
  --------------------
- 
+ returns the pair associated with the symbol, and #f if the symbol
+ is not the first element of any pair. For example,
+ (assoc 'joan '((john smith) (joan doe) (marcia law)))  returns (joan doe)
+ (assoc 'john '((john smith) (joan doe) (marcia law)))  returns (john smith)
+ (assoc 'jean '((john smith) (joan doe) (marcia law)))  returns #f
  
  */
-List assocFn(char symbol, List list);
+List assocFn(List symbol, List list);
 
 /****************************************************************
  Function: condFn
