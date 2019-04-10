@@ -16,6 +16,7 @@
 
 //Token stores the most recent "token" viewed by lexer.c
 char *token;
+List environment;
 
 
 /****************************************************************
@@ -175,9 +176,11 @@ List s_expr(int depth) {
  functions by calling methods: quote, car, cdr, symbol? and cons
  
  ****************************************************************/
-List temp, temp2, temp3;
 
 List eval(List list){
+    List temp = list;
+    List temp2 = list;
+    
     if(carFn(list) != NULL){
         if(carFn(list)->symbol != NULL){
             
@@ -191,37 +194,45 @@ List eval(List list){
             if (cdrFn(list) != NULL && carFn(cdrFn(list)) != NULL) {    // so that temp can be created
                 temp = eval(carFn(cdrFn(list)));            // List of 2nd conCell List
             }
+            if(cdrFn(list) != NULL && cdrFn(cdrFn(list)) != NULL && carFn(cdrFn(cdrFn(list))) != NULL){
+                temp2 = eval(carFn(cdrFn(cdrFn(list))));
+            }
                 if(!strcmp(symbol, "quote")){
                     return quoteFn(carFn(cdrFn(list)));     // no eval() recursion
                 }
-                if(!strcmp(symbol, "car")){
+                else if(!strcmp(symbol, "car")){
                     return carFn(temp);
                 }
-                if(!strcmp(symbol, "cdr")){
+                else if(!strcmp(symbol, "cdr")){
                     return cdrFn(temp);
                 }
-                if(!strcmp(symbol, "symbol?")){
+                else if(!strcmp(symbol, "symbol?")){
                     return symbolFn(temp);
                 }
-                if(!strcmp(symbol, "cons")){
+                else if(!strcmp(symbol, "cons")){
                     // the second list is one cdr deeper than temp (defined above)
-                    return consFn(temp, eval(carFn(cdrFn(cdrFn(list)))));
+                    return consFn(temp, temp2);
                 }
-            
-            if(!strcmp(symbol, "null?")){
-                return nullFn(temp);
-            }
-            if(!strcmp(symbol, "append")){
-                return appendFn(temp, eval(carFn(cdrFn(cdrFn(list)))));
-            }
-            if(!strcmp(symbol, "equal?")){
-                return equalFn(temp, eval(carFn(cdrFn(cdrFn(list)))));
-            }
-            if(!strcmp(symbol, "assoc")){
-                return assocFn(temp, eval(carFn(cdrFn(cdrFn(list)))));
-            }
-            
-            
+                else if(!strcmp(symbol, "null?")){
+                    return nullFn(temp);
+                }
+                else if(!strcmp(symbol, "append")){
+                    return appendFn(temp, temp2);
+                }
+                else if(!strcmp(symbol, "equal?")){
+                    return equalFn(temp, temp2);
+                }
+                else if(!strcmp(symbol, "assoc")){
+                    return assocFn(temp, temp2);
+                }
+                else if(!strcmp(symbol, "define")){
+                    printf("defined\n");
+                    return consFn(temp, environment);
+                }
+                else{
+                    printf("hi der\n");
+                    return assocFn(temp, environment);
+                }
         }
     }
     return list;
@@ -315,7 +326,6 @@ List equalFn(List list1, List list2){
             return createCell("#t");
         }
     }
-    printf("not equal\n");
     return createCell("()");
 }
 //if it is a list call list equalFN
@@ -378,8 +388,6 @@ List assocFn(List symbolList, List list){
 List condFn(){
     return 0;
 }
-
-
 
 
 void S_Expression(){
