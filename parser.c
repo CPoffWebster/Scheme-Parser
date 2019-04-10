@@ -16,8 +16,6 @@
 
 //Token stores the most recent "token" viewed by lexer.c
 char *token;
-List environment;
-
 
 /****************************************************************
  createCell()
@@ -176,6 +174,7 @@ List s_expr(int depth) {
  functions by calling methods: quote, car, cdr, symbol? and cons
  
  ****************************************************************/
+int envSize = 0;
 
 List eval(List list){
     List temp = list;
@@ -195,44 +194,49 @@ List eval(List list){
                 temp = eval(carFn(cdrFn(list)));            // List of 2nd conCell List
             }
             if(cdrFn(list) != NULL && cdrFn(cdrFn(list)) != NULL && carFn(cdrFn(cdrFn(list))) != NULL){
-                temp2 = eval(carFn(cdrFn(cdrFn(list))));
+                temp2 = eval(carFn(cdrFn(cdrFn(list)))); // one cdr deeper than temp (defined above)
             }
                 if(!strcmp(symbol, "quote")){
                     return quoteFn(carFn(cdrFn(list)));     // no eval() recursion
                 }
-                else if(!strcmp(symbol, "car")){
+                if(!strcmp(symbol, "car")){
                     return carFn(temp);
                 }
-                else if(!strcmp(symbol, "cdr")){
+                if(!strcmp(symbol, "cdr")){
                     return cdrFn(temp);
                 }
-                else if(!strcmp(symbol, "symbol?")){
+                if(!strcmp(symbol, "symbol?")){
                     return symbolFn(temp);
                 }
-                else if(!strcmp(symbol, "cons")){
-                    // the second list is one cdr deeper than temp (defined above)
+                if(!strcmp(symbol, "cons")){
                     return consFn(temp, temp2);
                 }
-                else if(!strcmp(symbol, "null?")){
+                if(!strcmp(symbol, "null?")){
                     return nullFn(temp);
                 }
-                else if(!strcmp(symbol, "append")){
+                if(!strcmp(symbol, "append")){
                     return appendFn(temp, temp2);
                 }
-                else if(!strcmp(symbol, "equal?")){
+                if(!strcmp(symbol, "equal?")){
                     return equalFn(temp, temp2);
                 }
-                else if(!strcmp(symbol, "assoc")){
+                if(!strcmp(symbol, "assoc")){
                     return assocFn(temp, temp2);
                 }
-                else if(!strcmp(symbol, "define")){
-                    printf("defined\n");
-                    return consFn(temp, environment);
+                if(!strcmp(symbol, "define")){
+                    envSize++;
+                    return defineFn(temp, temp2);
                 }
-                else{
-                    printf("hi der\n");
-                    return assocFn(temp, environment);
-                }
+        }
+    }
+    else if(envSize != 0 && list->symbol != NULL){
+        printf("first hurdle\n");
+        if(assocFn(temp, environment) != NULL && carFn(assocFn(temp, environment)) != NULL){  //carFn(assocFn(temp, environment))->symbol
+            printf("second hurdle\n");
+            if(!strcmp(list->symbol, carFn(assocFn(temp, environment))->symbol)){
+                printf("third hurdle\n");
+                return carFn(cdrFn(assocFn(temp, environment)));
+            }
         }
     }
     return list;
@@ -298,7 +302,7 @@ List appendFn(List list1, List list2){
 //helper function for appendFn
 int nullFnTF(List list){
     if(list == NULL) return 1;
-    if(!strcmp(list->symbol, "#f")){
+    if(!strcmp(list->symbol, "#f") || !strcmp(list->symbol, "()")){
         return 1;
     }else return 0;
 }
@@ -385,18 +389,29 @@ List assocFn(List symbolList, List list){
 
 //cond. The multiple-alternative conditional.
 //cond is, as you know, used for flow of control in defining Scheme functions, so it is extremely important that it works properly. (If you want to add the if construct as well, please do.)
-List condFn(){
+List condFn(List list){
     return 0;
 }
 
+// Adds the defined fn to the environment
+List defineFn(List symbol, List list){
+    List tempList = consFn(list, createCell(NULL));
+    List tempDefine = consFn(symbol, tempList);
+    environment = consFn(tempDefine, environment);
+    return symbol;
+}
 
-void S_Expression(){
+
+void S_Expression(int firstTime){
+    if(firstTime) environment = createCell(NULL);
     token = (char *) calloc(20, sizeof(char));
     startTokens(20);
     strcpy(token, getToken());
     
     List buildList = s_expr(0);     // depth starts at 0
     //printList(buildList, 1);        // startBool starts as True
-    printList( eval(buildList), 1);
+    printList(eval(buildList), 1);
+    printf("\nenv: ");
+    printList(environment, 1);
     printf("\n");
 }

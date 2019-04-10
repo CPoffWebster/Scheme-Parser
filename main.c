@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "parser.h"
 
+List environment;
 
 int main(){
     
@@ -19,10 +20,11 @@ int main(){
     printf("'parse tree' will be printed out. \n");
     printf("Type Ctrl-c to quit.: \n");
     printf("\nscheme> ");
-    
+    int firstTime = 1;
     
     while(1){
-        S_Expression();
+        S_Expression(firstTime);
+        firstTime = 0;
         printf("\nscheme> ");
     }
     

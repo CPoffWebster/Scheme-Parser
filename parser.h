@@ -27,6 +27,8 @@
      struct cell *rest;
  }; typedef struct cell *List;
 
+// Environment for the defined functions, created in eval()
+List environment;
 
 /****************************************************************
  Function: S_Expression()
@@ -39,7 +41,7 @@
  from the previously built getToken() as tested by lextester.c.
  
 */
-void S_Expression();
+void S_Expression(int firstTime);
 
 
 /****************************************************************
@@ -180,7 +182,15 @@ List assocFn(List symbol, List list);
  
  
  */
-List condFn();
+List condFn(List list);
+
+/****************************************************************
+ Function: defineFn
+ --------------------
+ Adds the defined function to the environment
+ 
+ */
+List defineFn(List symbol, List list);
 
 
 
