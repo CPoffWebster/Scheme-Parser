@@ -401,9 +401,9 @@ List condFn(List list){
         if(trueFunction) return eval(carFn(cdrFn(list)));
     }
     else{   // recurssion
-        condFn(carFn(cdrFn(list)));
+        return condFn(carFn(cdrFn(list)));
     }
-    return 0;
+    return list; // to remove error
 }
 
 // Adds the defined fn to the environment
