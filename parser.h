@@ -179,7 +179,7 @@ List assocFn(List symbol, List list);
 /****************************************************************
  Function: condFn
  --------------------
- 
+ Used for flow of control in defining Scheme functions
  
  */
 List condFn(List list);

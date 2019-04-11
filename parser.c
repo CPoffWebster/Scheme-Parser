@@ -382,8 +382,7 @@ List assocFn(List symbolList, List list){
     }
 }
 
-//cond. The multiple-alternative conditional.
-//cond is, as you know, used for flow of control in defining Scheme functions, so it is extremely important that it works properly. (If you want to add the if construct as well, please do.)
+// if condition one is true, else look at next condition, and so on
 List condFn(List list){
     List temp;
     int trueFunction;   // if or else
