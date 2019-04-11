@@ -229,15 +229,9 @@ List eval(List list){
                 }
         }
     }
-    else if(envSize != 0 && list->symbol != NULL){
-        printf("first hurdle\n");
-        if(assocFn(temp, environment) != NULL && carFn(assocFn(temp, environment)) != NULL){  //carFn(assocFn(temp, environment))->symbol
-            printf("second hurdle\n");
-            if(!strcmp(list->symbol, carFn(assocFn(temp, environment))->symbol)){
-                printf("third hurdle\n");
-                return carFn(cdrFn(assocFn(temp, environment)));
-            }
-        }
+    // find symbols from the environment -- if so print out the value
+    else if(carFn(assocFn(temp, environment)) != NULL && !strcmp(list->symbol, carFn(assocFn(temp, environment))->symbol)){
+        return carFn(cdrFn(assocFn(temp, environment)));
     }
     return list;
 }
