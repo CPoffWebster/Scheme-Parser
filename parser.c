@@ -174,7 +174,6 @@ List s_expr(int depth) {
  functions by calling methods: quote, car, cdr, symbol? and cons
  
  ****************************************************************/
-int envSize = 0;
 
 List eval(List list){
     List temp = list;
@@ -224,8 +223,10 @@ List eval(List list){
                     return assocFn(temp, temp2);
                 }
                 if(!strcmp(symbol, "define")){
-                    envSize++;
                     return defineFn(temp, temp2);
+                }
+                if(!strcmp(symbol, "cond")){
+                    return condFn(cdrFn(list));
                 }
         }
     }
@@ -384,6 +385,24 @@ List assocFn(List symbolList, List list){
 //cond. The multiple-alternative conditional.
 //cond is, as you know, used for flow of control in defining Scheme functions, so it is extremely important that it works properly. (If you want to add the if construct as well, please do.)
 List condFn(List list){
+    List temp;
+    int trueFunction;   // if or else
+    if(carFn(carFn(list)) != NULL){     // evaluates function
+        temp = carFn(carFn(list));
+        trueFunction = 0;
+    }
+    else{   // evaluates #t function
+        temp = carFn(list);
+        trueFunction = 1;
+    }
+    
+    if(!strcmp(eval(temp)->symbol, "#t")){  // if statement is true
+        if(!trueFunction) return eval(carFn(cdrFn(carFn(list))));
+        if(trueFunction) return eval(carFn(cdrFn(list)));
+    }
+    else{   // recurssion
+        condFn(carFn(cdrFn(list)));
+    }
     return 0;
 }
 
@@ -403,9 +422,6 @@ void S_Expression(int firstTime){
     strcpy(token, getToken());
     
     List buildList = s_expr(0);     // depth starts at 0
-    //printList(buildList, 1);        // startBool starts as True
     printList(eval(buildList), 1);
-    printf("\nenv: ");
-    printList(environment, 1);
     printf("\n");
 }
