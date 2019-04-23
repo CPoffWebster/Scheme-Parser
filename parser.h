@@ -69,7 +69,7 @@ void printList(List list, int depth);
  This method evaluates a given list in scheme.
  
  */
-List eval(List list);
+List eval(List list, List environment);
 
 /****************************************************************
  Function: quoteFn

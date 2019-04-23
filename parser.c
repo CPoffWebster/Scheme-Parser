@@ -175,7 +175,7 @@ List s_expr(int depth) {
  
  ****************************************************************/
 
-List eval(List list){
+List eval(List list, List environment){
     List temp = list;
     List temp2 = list;
 
