@@ -175,7 +175,7 @@ List s_expr(int depth) {
  
  ****************************************************************/
 
-List eval(List list, List environment){
+List eval(List list, List fn_environment){
     List temp = list;
     List temp2 = list;
 
@@ -190,7 +190,9 @@ List eval(List list, List environment){
             
             // adds function to environment
             if(!strcmp(symbol, "define")){
-                if(!symbolFnTF(carFn(cdrFn(list)))) return defineFn(list);  // if not defining a symbol
+                if(!symbolFnTF(carFn(cdrFn(list)))){
+                    return defineFn(list);  // if not defining a symbol
+                }
             }
             
             if (cdrFn(list) != NULL && carFn(cdrFn(list)) != NULL) {    // so that temp can be created
@@ -200,6 +202,9 @@ List eval(List list, List environment){
                 temp2 = eval(carFn(cdrFn(cdrFn(list))), environment); // one cdr deeper than temp (defined above)
             }
                 // evaluate different scheme functions
+                if(!strcmp(symbol, "fn_environment")){
+                    return fn_environment;
+                }
                 if(!strcmp(symbol, "environment")){
                     return environment;
                 }
@@ -264,8 +269,34 @@ List eval(List list, List environment){
 
 // evaluates a function
 List userDefFn(List list, List environment){
-    printf("made it boiii\n");
-    return 0;
+    List function = assocFn(carFn(list), environment);
+    List varAssign = cdrFn(carFn(cdrFn(carFn(cdrFn(function)))));
+    List params = carFn(cdrFn(carFn(cdrFn(list))));    // doesn't work for multi-variable functions
+    
+    List parameters = assignParameters(params, varAssign, environment);
+    printList(parameters, 1);
+    return eval(parameters, environment);
+}
+
+List assignParameters(List params, List varAssign, List environment){
+    printf("VarAssign: ");
+    printList(varAssign, 1);
+    printf("\n");
+    
+    printf("Params: ");
+    printList(params, 1);
+    printf("\n");
+    
+    // base case - there is one variable in the Fn
+    if(cdrFn(varAssign) == NULL){
+        return defineSymbol(carFn(varAssign), params);
+    }
+    else{
+        environment = defineSymbol(carFn(varAssign), carFn(params));
+        assignParameters(cdrFn(params), cdrFn(varAssign), environment);
+    }
+    printf("error return \n");
+    return environment;
 }
 
 // Parses list as a single element
@@ -439,8 +470,8 @@ List condFn(List list){
         temp = carFn(list);
         trueFunction = 1;
     }
-    
-    if(!strcmp(eval(temp, environment)->symbol, "#t") || !strcmp(eval(temp, environment)->symbol, "else")){  // if statement is true
+    // if statement is true
+    if(!strcmp(eval(temp, environment)->symbol, "#t") || !strcmp(eval(temp, environment)->symbol, "else")){
         if(!trueFunction) return eval(carFn(cdrFn(carFn(list))), environment);
         if(trueFunction) return eval(carFn(cdrFn(list)), environment);
     }
@@ -466,7 +497,8 @@ List defineFn(List list){
     List symbol = carFn(carFn(cdrFn(list)));
     List tempList = consFn(list, createCell(NULL));
     List tempDefine = consFn(symbol, tempList);
-    environment = consFn(tempDefine, environment);
+    fn_environment = consFn(tempDefine, fn_environment);
+    environment = fn_environment;
     
     List tempSymbol = consFn(symbol, createCell(NULL));
     userDefFunctions = consFn(tempSymbol, userDefFunctions);
@@ -476,6 +508,7 @@ List defineFn(List list){
 
 void S_Expression(int firstTime){
     if(firstTime){  // initiate environments
+        fn_environment = createCell(NULL);
         environment = createCell(NULL);
         userDefSymbols = createCell(NULL);
         userDefFunctions = createCell(NULL);
@@ -485,7 +518,6 @@ void S_Expression(int firstTime){
     strcpy(token, getToken());
     
     List buildList = s_expr(0);     // depth starts at 0
-    //printList(buildList, 1);
-    printList(eval(buildList, environment), 1);
+    printList(eval(buildList, fn_environment), 1);
     printf("\n");
 }

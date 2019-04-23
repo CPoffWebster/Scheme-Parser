@@ -28,6 +28,7 @@
  }; typedef struct cell *List;
 
 // Environment for the defined functions, created in eval()
+List fn_environment;
 List environment;
 // List of user defined Symbols
 List userDefSymbols;
@@ -197,10 +198,16 @@ List condFn(List list);
 List defineSymbol(List symbol, List list);
 List defineFn(List list);
 
+// used for seeing if list is a user defined function/symbol
+int assocFnTF(List symbolList, List list);
 
+// call a user defined function
 List userDefFn(List list, List environment);
 
-int assocFnTF(List symbolList, List list);
+List assignParameters(List params, List varAssign, List environment);
+
+
+
 
 
 #endif
