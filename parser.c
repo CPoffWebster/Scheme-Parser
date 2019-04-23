@@ -271,32 +271,49 @@ List eval(List list, List fn_environment){
 List userDefFn(List list, List environment){
     List function = assocFn(carFn(list), environment);
     List varAssign = cdrFn(carFn(cdrFn(carFn(cdrFn(function)))));
-    List params = carFn(cdrFn(carFn(cdrFn(list))));    // doesn't work for multi-variable functions
+    List params; //= cdrFn(list);  //List params = cdrFn(list);//cdrFn(carFn(cdrFn(list)));    // doesn't work for multi-variable functions
     
-    List parameters = assignParameters(params, varAssign, environment);
+    if(cdrFn(varAssign) == NULL) assignParameter(cdrFn(carFn(cdrFn(list))), varAssign, environment);
+    else assignMultParameters(cdrFn(list), varAssign, environment);
+    
+    /*printf("func: ");
+    printList(function, 1);
+    printf("\nvarAssin: ");
+    printList(varAssign, 1);
+    //printf("\n");
+    printf("\nlist: ");
+    printList(carFn(list), 1);
+    printf("\n");*/
+    
+    return eval(carFn(list), environment);
+    /*List parameters = params;//assignParameters(params, varAssign, environment);
     printList(parameters, 1);
-    return eval(parameters, environment);
+    // call eval(function parameters, environment)
+    return eval(parameters, environment);*/
 }
 
-List assignParameters(List params, List varAssign, List environment){
-    printf("VarAssign: ");
+void assignParameter(List params, List varAssign, List environment){
+    defineSymbol(carFn(varAssign), carFn(params));//carFn(params));
+}
+
+void assignMultParameters(List params, List varAssign, List environment){
+    /*printf("VarAssign: ");
     printList(varAssign, 1);
     printf("\n");
     
     printf("Params: ");
     printList(params, 1);
-    printf("\n");
+    printf("\n");*/
     
-    // base case - there is one variable in the Fn
-    if(cdrFn(varAssign) == NULL){
-        return defineSymbol(carFn(varAssign), params);
+    defineSymbol(carFn(varAssign), eval(carFn(params), environment));
+    if(cdrFn(params) != NULL) assignMultParameters(cdrFn(params), cdrFn(varAssign), environment);
+}
+
+List listFn(List list){
+    if(carFn(list) != NULL){
+        carFn(list);
     }
-    else{
-        environment = defineSymbol(carFn(varAssign), carFn(params));
-        assignParameters(cdrFn(params), cdrFn(varAssign), environment);
-    }
-    printf("error return \n");
-    return environment;
+    return eval(list, environment);
 }
 
 // Parses list as a single element
