@@ -29,6 +29,10 @@
 
 // Environment for the defined functions, created in eval()
 List environment;
+// List of user defined Symbols
+List userDefSymbols;
+// List of user defined Functions
+List userDefFunctions;
 
 /****************************************************************
  Function: S_Expression()
@@ -192,6 +196,11 @@ List condFn(List list);
  */
 List defineSymbol(List symbol, List list);
 List defineFn(List list);
+
+
+List userDefFn(List list, List environment);
+
+int assocFnTF(List symbolList, List list);
 
 
 #endif
