@@ -187,11 +187,11 @@ List condFn(List list);
 /****************************************************************
  Function: defineFn
  --------------------
- Adds the defined function to the environment
+ Adds the defined symbol or defined function to the environment
  
  */
-List defineFn(List symbol, List list);
-
+List defineSymbol(List symbol, List list);
+List defineFn(List list);
 
 
 #endif

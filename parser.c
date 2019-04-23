@@ -178,15 +178,19 @@ List s_expr(int depth) {
 List eval(List list){
     List temp = list;
     List temp2 = list;
-    
+
     if(carFn(list) != NULL){
         if(carFn(list)->symbol != NULL){
-            
             char* symbol = carFn(list)->symbol;         //create symbol char
-            
+            //printf("%s\n", symbol);
             if(!strcmp(symbol, "exit")){
                 printf("Have a nice day!\n");
                 exit(0);
+            }
+            
+            // adds function to environment
+            if(!strcmp(symbol, "define")){
+                if(!symbolFnTF(carFn(cdrFn(list)))) return defineFn(list);  // if not defining a symbol
             }
             
             if (cdrFn(list) != NULL && carFn(cdrFn(list)) != NULL) {    // so that temp can be created
@@ -195,6 +199,10 @@ List eval(List list){
             if(cdrFn(list) != NULL && cdrFn(cdrFn(list)) != NULL && carFn(cdrFn(cdrFn(list))) != NULL){
                 temp2 = eval(carFn(cdrFn(cdrFn(list)))); // one cdr deeper than temp (defined above)
             }
+                // evaluate different scheme functions
+                if(!strcmp(symbol, "environment")){
+                    return environment;
+                }
                 if(!strcmp(symbol, "quote")){
                     return quoteFn(carFn(cdrFn(list)));     // no eval() recursion
                 }
@@ -223,7 +231,7 @@ List eval(List list){
                     return assocFn(temp, temp2);
                 }
                 if(!strcmp(symbol, "define")){
-                    return defineFn(temp, temp2);
+                    return defineSymbol(temp, temp2);
                 }
                 if(!strcmp(symbol, "cond")){
                     return condFn(cdrFn(list));
@@ -231,9 +239,9 @@ List eval(List list){
         }
     }
     // find symbols from the environment -- if so print out the value
-    else if(carFn(assocFn(temp, environment)) != NULL && !strcmp(list->symbol, carFn(assocFn(temp, environment))->symbol)){
+    /*else if(carFn(assocFn(temp, environment)) != NULL && !strcmp(list->symbol, carFn(assocFn(temp, environment))->symbol)){
         return carFn(cdrFn(assocFn(temp, environment)));
-    }
+    }*/
     return list;
 }
 
@@ -395,7 +403,7 @@ List condFn(List list){
         trueFunction = 1;
     }
     
-    if(!strcmp(eval(temp)->symbol, "#t")){  // if statement is true
+    if(!strcmp(eval(temp)->symbol, "#t") || !strcmp(eval(temp)->symbol, "else")){  // if statement is true
         if(!trueFunction) return eval(carFn(cdrFn(carFn(list))));
         if(trueFunction) return eval(carFn(cdrFn(list)));
     }
@@ -405,8 +413,17 @@ List condFn(List list){
     return list; // to remove error
 }
 
-// Adds the defined fn to the environment
-List defineFn(List symbol, List list){
+// Adds the defined symbol to the environment
+List defineSymbol(List symbol, List list){
+    List tempList = consFn(list, createCell(NULL));
+    List tempDefine = consFn(symbol, tempList);
+    environment = consFn(tempDefine, environment);
+    return symbol;
+}
+
+// Adds a function to the environment
+List defineFn(List list){
+    List symbol = carFn(carFn(cdrFn(list)));
     List tempList = consFn(list, createCell(NULL));
     List tempDefine = consFn(symbol, tempList);
     environment = consFn(tempDefine, environment);
@@ -421,6 +438,7 @@ void S_Expression(int firstTime){
     strcpy(token, getToken());
     
     List buildList = s_expr(0);     // depth starts at 0
+    //printList(buildList, 1);
     printList(eval(buildList), 1);
     printf("\n");
 }
