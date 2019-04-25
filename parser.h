@@ -195,8 +195,8 @@ List condFn(List list);
  Adds the defined symbol or defined function to the environment
  
  */
-List defineSymbol(List symbol, List list);
 List defineFn(List list);
+List defineSymbol(List symbol, List list);
 
 // used for seeing if list is a user defined function/symbol
 int assocFnTF(List symbolList, List list);
@@ -204,10 +204,11 @@ int assocFnTF(List symbolList, List list);
 // call a user defined function
 List userDefFn(List list, List environment);
 
+// assign parameters to given variables
 void assignParameter(List params, List varAssign, List environment);
 void assignMultParameters(List params, List varAssign, List environment);
 
-List listFn(List list);
+
 
 
 
