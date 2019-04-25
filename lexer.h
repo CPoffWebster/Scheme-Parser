@@ -67,6 +67,6 @@ void startTokens (int maxLength);
  startTokens()). This function is not guaranteed to work for longer
  tokens, although it may work in most cases.
  */
-char * getToken ();
+char * getToken (void);
 
 #endif

@@ -275,6 +275,9 @@ List eval(List list, List fn_environment){
     return list;
 }
 
+//function that returns true if it is a user defined function
+
+
 // evaluates a function
 List userDefFn(List list, List environment){
     List function = assocFn(carFn(list), environment);
@@ -283,17 +286,16 @@ List userDefFn(List list, List environment){
     if(cdrNull(parameter) == NULL) environment = assignParameters(cdrFn(carFn(cdrFn(list))), parameter, environment);    // one variable
     else environment = assignParameters(cdrFn(list), parameter, environment); // multiple variables
     
-    List var = carFn(list);
-    List evaluate = consFn(var, parameter);
+    List functionCall = carFn(cdrFn(cdrFn(carFn(cdrFn(function)))));
     
-    printf("evaluate: ");
-    printList(evaluate, 1);
+    printf("func: ");
+    printList(functionCall, 1);
     printf("\n");
     printf("env: ");
     printList(environment, 1);
     printf("\n");
-    
-    return 0;//eval(evaluate, environment);
+
+    return eval(functionCall, environment);
 }
 
 // assigns multi-variable parameters
@@ -305,7 +307,6 @@ List assignParameters(List argument, List parameter, List environment){
     environment = consFn(tempList, environment);
     if(cdrNull(argument) != NULL){
         printf("another parameter called\n");
-        //environment = consFn(assignMultParameters(cdrFn(argument), cdrFn(parameter), environment), environment);
         return assignParameters(cdrFn(argument), cdrFn(parameter), environment);
     }
     return environment;
@@ -514,6 +515,7 @@ List defineSymbol(List symbol, List list){
 
 // Adds a function to the environment
 List defineFn(List list){
+    printf("well that is a bug\n");
     List symbol = carFn(carFn(cdrFn(list)));
     List tempList = consFn(list, createCell(NULL));
     List tempDefine = consFn(symbol, tempList);
@@ -522,6 +524,7 @@ List defineFn(List list){
     
     List tempSymbol = consFn(symbol, createCell(NULL));
     userDefFunctions = consFn(tempSymbol, userDefFunctions);
+    printf("hi there\n");
     return symbol;
 }
 
