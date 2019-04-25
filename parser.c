@@ -213,7 +213,7 @@ List eval(List list, List fn_environment){
                 if(!strcmp(symbol, "environment")){
                     return environment;
                 }
-                if(!strcmp(symbol, "userDefSymbols")){
+                if(!strcmp(symbol, "userDefSymbols")){  // can put everything in the same environment
                     return userDefSymbols;
                 }
                 if(!strcmp(symbol, "userDefFunctions")){
@@ -278,17 +278,13 @@ List eval(List list, List fn_environment){
 // evaluates a function
 List userDefFn(List list, List environment){
     List function = assocFn(carFn(list), environment);
-    List varAssign = cdrFn(carFn(cdrFn(carFn(cdrFn(function)))));
+    List parameter = cdrFn(carFn(cdrFn(carFn(cdrFn(function)))));
     
-    if(cdrFn(varAssign) == NULL) assignParameter(cdrFn(carFn(cdrFn(list))), varAssign, environment);    // one variable
-    else assignMultParameters(cdrFn(list), varAssign, environment); // multiple variables
-    // List parameters = params;//assignParameters(params, varAssign, environment);
+    if(cdrNull(parameter) == NULL) environment = assignParameters(cdrFn(carFn(cdrFn(list))), parameter, environment);    // one variable
+    else environment = assignParameters(cdrFn(list), parameter, environment); // multiple variables
     
     List var = carFn(list);
-    List evaluate = consFn(var, varAssign);
-    
-    //(define (last L) (cond ((null? (cdr L)) (car L)) (#t (last (cdr L)))))
-    
+    List evaluate = consFn(var, parameter);
     
     printf("evaluate: ");
     printList(evaluate, 1);
@@ -297,28 +293,30 @@ List userDefFn(List list, List environment){
     printList(environment, 1);
     printf("\n");
     
-    //return evaluate;
     return eval(evaluate, environment);
-    //return eval(carFn(list), environment);
 }
 
 // assigns single variable parameter
-void assignParameter(List params, List varAssign, List environment){
-    defineSymbol(carFn(varAssign), carFn(params));
-}
+/*List assignParameter(List argument, List parameter, List environment){    // return the environment (as a whole)
+    printf("one parameter\n");
+
+    List tempList = consFn(carFn(parameter), argument);
+    return environment = consFn(tempList, environment);
+}*/
 
 // assigns multi-variable parameters
-void assignMultParameters(List params, List varAssign, List environment){
-    /*printf("VarAssign: ");
-    printList(varAssign, 1);
-    printf("\n");
+List assignParameters(List argument, List parameter, List environment){   //parameters vs arguments
+    printf("assigning parameters\n");
     
-    printf("Params: ");
-    printList(params, 1);
-    printf("\n");*/
-    
-    defineSymbol(carFn(varAssign), eval(carFn(params), environment));
-    if(cdrFn(params) != NULL) assignMultParameters(cdrFn(params), cdrFn(varAssign), environment);
+    List tempArgument = consFn(eval(carFn(argument), environment), createCell(NULL));
+    List tempList = consFn(carFn(parameter), tempArgument);
+    environment = consFn(tempList, environment);
+    if(cdrNull(argument) != NULL){
+        printf("another parameter called\n");
+        //environment = consFn(assignMultParameters(cdrFn(argument), cdrFn(parameter), environment), environment);
+        return assignParameters(cdrFn(argument), cdrFn(parameter), environment);
+    }
+    return environment;
 }
 
 // Parses list as a single element
@@ -336,6 +334,14 @@ List carFn(List list){
 
 // Returns the rest element of a list
 List cdrFn(List list){
+    if(list->rest == NULL){
+        return createCell(NULL);
+    }
+    else return list->rest;
+}
+
+// ex: (cdrNull '(a)) -> NULL
+List cdrNull(List list){
     return list->rest;
 }
 

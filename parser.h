@@ -204,9 +204,13 @@ int assocFnTF(List symbolList, List list);
 // call a user defined function
 List userDefFn(List list, List environment);
 
-// assign parameters to given variables
-void assignParameter(List params, List varAssign, List environment);
-void assignMultParameters(List params, List varAssign, List environment);
+// assign parameters to given variables, return updated environment
+//List assignParameter(List argument, List varAssign, List environment);
+List assignParameters(List argument, List varAssign, List environment);
+
+
+
+List cdrNull(List list); // only list->rest
 
 
 
