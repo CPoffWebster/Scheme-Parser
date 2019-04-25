@@ -293,19 +293,11 @@ List userDefFn(List list, List environment){
     printList(environment, 1);
     printf("\n");
     
-    return eval(evaluate, environment);
+    return 0;//eval(evaluate, environment);
 }
 
-// assigns single variable parameter
-/*List assignParameter(List argument, List parameter, List environment){    // return the environment (as a whole)
-    printf("one parameter\n");
-
-    List tempList = consFn(carFn(parameter), argument);
-    return environment = consFn(tempList, environment);
-}*/
-
 // assigns multi-variable parameters
-List assignParameters(List argument, List parameter, List environment){   //parameters vs arguments
+List assignParameters(List argument, List parameter, List environment){
     printf("assigning parameters\n");
     
     List tempArgument = consFn(eval(carFn(argument), environment), createCell(NULL));
