@@ -187,7 +187,7 @@ List assocFn(List symbol, List list);
  Used for flow of control in defining Scheme functions
  
  */
-List condFn(List list);
+List condFn(List list, List environment);
 
 /****************************************************************
  Function: defineFn

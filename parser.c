@@ -178,6 +178,15 @@ List s_expr(int depth) {
 List eval(List list, List fn_environment){
     List temp = list;
     List temp2 = list;
+    
+    printf("list: ");
+    printList(list, 1);
+    printf("\n");
+    
+    printf("env: ");
+    printList(environment, 1);
+    printf("\n");
+    
 
     if(carFn(list) != NULL){
         if(carFn(list)->symbol != NULL){
@@ -199,6 +208,12 @@ List eval(List list, List fn_environment){
             if (foundFunction->symbol != NULL) {
                 printf("found in the function environment\n");
             }*/
+            if(!strcmp(symbol, "cond")){
+                printf("COND BEING CALLED\n");
+                return condFn(cdrFn(list), environment);
+            }
+
+            
             
             if (cdrFn(list) != NULL && carFn(cdrFn(list)) != NULL) {    // so that temp can be created
                 temp = eval(carFn(cdrFn(list)), environment);            // List of 2nd conCell List
@@ -249,9 +264,10 @@ List eval(List list, List fn_environment){
                 if(!strcmp(symbol, "define")){
                     return defineSymbol(temp, temp2);
                 }
-                if(!strcmp(symbol, "cond")){
-                    return condFn(cdrFn(list));
-                }
+//                if(!strcmp(symbol, "cond")){
+//                    printf("COND BEING CALLED\n");
+//                    return condFn(cdrFn(list));
+//                }
         }
     }
     // find symbols from the environment -- if so print out the value
@@ -267,9 +283,9 @@ List eval(List list, List fn_environment){
         }*/
     }else if(carFn(list) != NULL && carFn(assocFn(carFn(list), environment)) != NULL){
         printf("user defined function\n");
-        printf("list: ");
-        printList(list, 1);
-        printf("\n");
+//        printf("list: ");
+//        printList(list, 1);
+//        printf("\n");
         return userDefFn(list, environment);
     }
     return list;
@@ -327,10 +343,10 @@ List carFn(List list){
 
 // Returns the rest element of a list
 List cdrFn(List list){
-    if(list->rest == NULL){
-        return createCell(NULL);
+    if(list->rest == NULL && strcmp(list->symbol, "#f")){
+        return createCell("#f");
     }
-    else return list->rest;
+    return list->rest;
 }
 
 // ex: (cdrNull '(a)) -> NULL
@@ -341,7 +357,7 @@ List cdrNull(List list){
 // Returns #t if element is a symbol, else #f
 List symbolFn(List list){
     //if it is a list (more than one element) than return false
-    if(list->symbol != NULL && cdrFn(list) == NULL){
+    if(list->symbol != NULL && cdrNull(list) == NULL){
         return createCell("#t");
     }
     else return createCell("()");
@@ -374,7 +390,7 @@ List consFn(List list1, List list2){
 //appends the second list to the end of the first
 List appendFn(List list1, List list2){
     if(nullFnTF(list1)) return list2;
-    return consFn(carFn(list1), appendFn(cdrFn(list1), list2));
+    return consFn(carFn(list1), appendFn(cdrNull(list1), list2));
 }
 
 //helper function for appendFn
@@ -387,10 +403,14 @@ int nullFnTF(List list){
 
 // returns #t for null lists, otherwise () or #f
 List nullFn(List list){
-    if(list == NULL) return createCell("#t");
-    if(!strcmp(list->symbol, "#f")){
+    if(list == NULL){
         return createCell("#t");
-    }else return createCell("()");
+    }
+    if(list->symbol != NULL){
+        if(!strcmp(list->symbol, "#f") || !strcmp(list->symbol, "()")){
+            return createCell("#t");
+        }
+    }return createCell("()");
 }
 
 // returns #t if the lists are the same, otherwise () or #f
@@ -445,7 +465,7 @@ int equalListFn(List list1, List list2){
 // Returns #t if element is a symbol, else #f
 int symbolFnTF(List list){
     //if it is a list (more than one element) than return false
-    if(list->symbol != NULL && cdrFn(list) == NULL){
+    if(list->symbol != NULL && cdrNull(list) == NULL){
         return 1;
     }
     else return 0;
@@ -480,30 +500,57 @@ int assocFnTF(List symbolList, List list){
 }
 
 // if condition one is true, else look at next condition, and so on
-List condFn(List list){
+List condFn(List list, List environment){
     List temp;
     int trueFunction;   // if or else
+
+//    printf("list: ");
+//    printList(list, 1);
+//    printf("\n");
+
     if(carFn(carFn(list)) != NULL){     // evaluates function
         temp = carFn(carFn(list));
+        printf("temp: ");
+        printList(temp, 1);
+        printf("\n");
         trueFunction = 0;
     }
     else{   // evaluates #t function
         temp = carFn(list);
+        printf("temp2: ");
+        printList(temp, 1);
+        printf("\n");
         trueFunction = 1;
     }
     // if statement is true
     if(!strcmp(eval(temp, environment)->symbol, "#t") || !strcmp(eval(temp, environment)->symbol, "else")){
-        if(!trueFunction) return eval(carFn(cdrFn(carFn(list))), environment);
-        if(trueFunction) return eval(carFn(cdrFn(list)), environment);
+        if(!trueFunction){
+            printf("returning: ");
+            printList(carFn(cdrFn(carFn(list))), 1);
+            printf("\n");
+            return eval(carFn(cdrFn(carFn(list))), environment);
+        }
+        if(trueFunction){
+            printf("returning: ");
+            printList(carFn(cdrFn(list)), 1);
+            printf("\n");
+            return eval(carFn(cdrFn(list)), environment);
+        }
     }
     else{   // recurssion
-        return condFn(carFn(cdrFn(list)));
+        printf("recurssion called: ");
+        printList(carFn(cdrFn(list)), 1);
+        printf("\n");
+        return condFn(carFn(cdrFn(list)), environment);
     }
+    printf("returning list for no reason\n");
     return list; // to remove error
 }
 
+
 // Adds the defined symbol to the environment
 List defineSymbol(List symbol, List list){
+    printf("symbol in environment\n");
     List tempList = consFn(list, createCell(NULL));
     List tempDefine = consFn(symbol, tempList);
     environment = consFn(tempDefine, environment);
@@ -515,7 +562,7 @@ List defineSymbol(List symbol, List list){
 
 // Adds a function to the environment
 List defineFn(List list){
-    printf("well that is a bug\n");
+    printf("function in environment\n");
     List symbol = carFn(carFn(cdrFn(list)));
     List tempList = consFn(list, createCell(NULL));
     List tempDefine = consFn(symbol, tempList);
@@ -524,7 +571,6 @@ List defineFn(List list){
     
     List tempSymbol = consFn(symbol, createCell(NULL));
     userDefFunctions = consFn(tempSymbol, userDefFunctions);
-    printf("hi there\n");
     return symbol;
 }
 
