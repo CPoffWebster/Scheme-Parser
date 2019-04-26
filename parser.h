@@ -30,10 +30,6 @@
 // Environment for the defined functions, created in eval()
 List fn_environment;
 List environment;
-// List of user defined Symbols
-List userDefSymbols;
-// List of user defined Functions
-List userDefFunctions;
 
 /****************************************************************
  Function: S_Expression()
@@ -99,6 +95,9 @@ List carFn(List list);
  
  */
 List cdrFn(List list);
+
+// only list->rest
+List cdrNull(List list);
 
 /****************************************************************
  Function: symbolFn
@@ -201,16 +200,19 @@ List defineSymbol(List symbol, List list);
 // used for seeing if list is a user defined function/symbol
 int assocFnTF(List symbolList, List list);
 
-// call a user defined function
+/****************************************************************
+ Function: userDefFn
+ --------------------
+ After a function has been created, userDefFn() calls and runs the
+ function after assigning parameters. userDefFn updates the env
+ recursively.
+ 
+ */
+
 List userDefFn(List list, List environment);
 
 // assign parameters to given variables, return updated environment
-//List assignParameter(List argument, List varAssign, List environment);
 List assignParameters(List argument, List varAssign, List environment);
-
-
-
-List cdrNull(List list); // only list->rest
 
 
 
