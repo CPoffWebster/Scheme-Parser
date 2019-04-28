@@ -267,7 +267,7 @@ List eval(List list, List environment){
     if(carFn(assocFn(list, environment)) != NULL){
         List defVal = carFn(cdrFn(assocFn(list, environment)));
         if(assocFnTF(list, environment)){   // Symbol
-//            printf("symbol refered\n");
+            printf("symbol refered\n");
             return defVal;
         }
     }else if(carFn(list) != NULL && carFn(assocFn(carFn(list), environment)) != NULL){
@@ -285,10 +285,6 @@ List eval(List list, List environment){
 
 // evaluates a function
 List userDefFn(List list, List environment){
-    List argument = eval(carFn(cdrFn(list)), environment);
-//    printf("ARGUMENT LIST INPUTED: ");
-//    printList(argument, 1);
-//    printf("\n");
     
     List function = assocFn(carFn(list), environment);
 //    printf("function: ");
@@ -307,10 +303,12 @@ List userDefFn(List list, List environment){
 //    printf("\n");
     
     if(cdrNull(parameter) == NULL){
-        environment = assignParameters(argument, parameter, environment);    // one variable   cdrFn(carFn(cdrFn(list)))
+        List argument = eval(carFn(cdrFn(list)), environment);
+        environment = assignParameters(argument, parameter, environment);    // one variable
     }
     else{
-        environment = assignParameters(cdrFn(list), parameter, environment); // multiple variables //cdrFn(list)
+        List argument = eval(cdrFn(list), environment);
+        environment = assignMultParameters(argument, parameter, environment); // multiple variables
     }
     
     List functionCall = carFn(cdrFn(cdrFn(carFn(cdrFn(function)))));
@@ -318,37 +316,30 @@ List userDefFn(List list, List environment){
 //    printf("func: ");
 //    printList(functionCall, 1);
 //    printf("\n");
-//    printf("env: ");
-//    printList(environment, 1);
-//    printf("\n");
+    printf("env: ");
+    printList(environment, 1);
+    printf("\n");
 //    printf("THIS IS BEING INPUTED\n");
 
     return eval(functionCall, environment);
 }
 
-// assigns multi-variable parameters
+// assigns single-variable parameters
 List assignParameters(List argument, List parameter, List environment){
-//    printf("assigning parameters\n");
-//    printf("argInputed: ");
-//    printList(argument, 1);
-//    printf("\n");
-    
     List tempArgument = consFn(argument, createCell(NULL));   // eval(carFn(argument), environment)
-//    printf("parameter: ");
-//    printList(parameter, 1);
-//    printf("\n");
     List tempList = consFn(carFn(parameter), tempArgument);
-////        printf("tempArg: ");
-////        printList(tempArgument, 1);
-////        printf("\n");
-//        printf("tempList: ");
-//        printList(tempList, 1);
-//        printf("\n");
+    return environment = consFn(tempList, environment);
+}
+
+// assigns multi-variable parameters
+List assignMultParameters(List argument, List parameter, List environment){
+    List tempArgument = consFn(eval(carFn(argument), environment), createCell(NULL));
+    List tempList = consFn(carFn(parameter), tempArgument);
     environment = consFn(tempList, environment);
-    if(cdrNull(parameter) != NULL){
-//        printf("another parameter called\n");
-        return assignParameters(cdrFn(argument), cdrFn(parameter), environment);
-    }
+        if(cdrNull(parameter) != NULL){
+            return assignMultParameters(cdrFn(argument), cdrFn(parameter), environment);
+        }
+        return environment;
     return environment;
 }
 
@@ -432,9 +423,11 @@ List nullFn(List list){
     }
     if(list->symbol != NULL){
         if(!strcmp(list->symbol, "#f") || !strcmp(list->symbol, "()")){
+            printf("returning true\n");
             return createCell("#t");
         }
-    }return createCell("()");
+    }
+    return createCell("()");
 }
 
 // returns #t if the lists are the same, otherwise () or #f
@@ -587,8 +580,9 @@ List defineFn(List list){
     List symbol = carFn(carFn(cdrFn(list)));
     List tempList = consFn(list, createCell(NULL));
     List tempDefine = consFn(symbol, tempList);
-    fn_environment = consFn(tempDefine, fn_environment);
-    environment = fn_environment;
+    //fn_environment = consFn(tempDefine, fn_environment);
+    //environment = fn_environment;
+    environment = consFn(tempDefine, environment);
     return symbol;
 }
 
@@ -603,6 +597,7 @@ void S_Expression(int firstTime){
     strcpy(token, getToken());
     
     List buildList = s_expr(0);     // depth starts at 0
-    printList(eval(buildList, fn_environment), 1);
+    //printList(eval(buildList, fn_environment), 1);
+    printList(eval(buildList, environment), 1);
     printf("\n");
 }

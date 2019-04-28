@@ -212,7 +212,8 @@ int assocFnTF(List symbolList, List list);
 List userDefFn(List list, List environment);
 
 // assign parameters to given variables, return updated environment
-List assignParameters(List argument, List varAssign, List environment);
+List assignParameters(List argument, List parameter, List environment);
+List assignMultParameters(List argument, List parameter, List environment);
 
 
 
