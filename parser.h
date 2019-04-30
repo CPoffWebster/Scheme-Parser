@@ -216,6 +216,8 @@ List assignParameters(List argument, List parameter, List environment);
 List assignMultParameters(List argument, List parameter, List environment);
 
 
+// returns cons of a list with #f
+List listFn(List list);
 
 
 
