@@ -190,7 +190,7 @@ List eval(List list, List environment){
     if(carFn(list) != NULL){
         if(carFn(list)->symbol != NULL){
             char* symbol = carFn(list)->symbol;         //create symbol char
-            //printf("%s\n", symbol);
+            
             if(!strcmp(symbol, "exit")){
                 printf("Have a nice day!\n");
                 exit(0);
@@ -212,9 +212,15 @@ List eval(List list, List environment){
             
             //not evaluating like it should with a defined symbol
             if(!strcmp(symbol, "quote")){
-                //return quoteFn(eval(carFn(cdrFn(list)), environment));     // no eval() recursion
                 return quoteFn(carFn(cdrFn(list)));
             }
+//            if(!strcmp(symbol, "list")){
+//                printf("LIST CALLED\n");
+//                printf("list: ");
+//                printList(carFn(cdrFn(list)), 1);
+//                printf("\n");
+//                return eval(carFn(cdrFn(list)), environment);
+//            }
             
             if (cdrFn(list) != NULL && carFn(cdrFn(list)) != NULL) {    // so that temp can be created
                 temp = eval(carFn(cdrFn(list)), environment);           // List of 2nd conCell List
@@ -249,12 +255,12 @@ List eval(List list, List environment){
                 }
                 if(!strcmp(symbol, "equal?")){
                     printf("equal called\n");
-//                    printf("list1: ");
-//                    printList(list1, 1);
-//                    printf("\n");
-//                    printf("list2: ");
-//                    printList(list2, 1);
-//                    printf("\n");
+                    printf("list1: ");
+                    printList(temp, 1);
+                    printf("\n");
+                    printf("list2: ");
+                    printList(temp2, 1);
+                    printf("\n");
                     return equalFn(temp, temp2);
                 }
                 if(!strcmp(symbol, "assoc")){
@@ -602,7 +608,6 @@ List defineSymbol(List symbol, List list){
     List tempDefine = consFn(symbol, tempList);
     environment = consFn(tempDefine, environment);
     
-//
 //    List tempAssoc = assocFn(symbol, environment);
 //    List defVal = carFn(cdrFn(tempAssoc));//carFn(cdrFn(assocFn(symbol, environment)));
 //                        printf("listAssoc: ");
