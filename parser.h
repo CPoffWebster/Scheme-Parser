@@ -71,6 +71,11 @@ void printList(List list, int depth);
  */
 List eval(List list, List environment);
 
+
+/****************************************************************
+ BUILT IN SCHEME FUNCTIONS
+ ****************************************************************/
+
 /****************************************************************
  Function: quoteFn
  --------------------
@@ -144,7 +149,7 @@ int nullFnTF(List list);
  */
 List appendFn(List list1, List list2);
 
-// PRIVATE METHOD
+// HELPER METHOD
 // nullFn except turns true/false values
 int nullFnTF(List list);
 
@@ -161,7 +166,7 @@ int nullFnTF(List list);
  */
 List equalFn(List list1, List list2);
 
-// PRIVATE METHODS
+// HELPER METHODS
 // evaluates if the list is a single symbol
 int symbolFnTF(List list);
 // evaluates if a list is equal to a list (NO lists inside of lists found)
@@ -187,6 +192,20 @@ List assocFn(List symbol, List list);
  */
 List condFn(List list, List environment);
 
+
+/****************************************************************
+ Function: listFn
+ --------------------
+ returns cons of a list with #f
+
+ */
+List listFn(List list);
+
+
+/****************************************************************
+ DEFINING USER-DEFINED FUNCTIONS
+ ****************************************************************/
+
 /****************************************************************
  Function: defineFn
  --------------------
@@ -196,6 +215,7 @@ List condFn(List list, List environment);
 List defineFn(List list);
 List defineSymbol(List symbol, List list);
 
+// HELPER METHOD
 // used for seeing if list is a user defined function/symbol
 int assocFnTF(List symbolList, List list);
 
@@ -210,14 +230,10 @@ int assocFnTF(List symbolList, List list);
 
 List userDefFn(List list, List environment);
 
+// HELPER METHODS
 // assign parameters to given variables, return updated environment
 List assignParameters(List argument, List parameter, List environment);
 List assignMultParameters(List argument, List parameter, List environment);
-
-
-// returns cons of a list with #f
-List listFn(List list);
-
 
 
 #endif

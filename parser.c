@@ -179,14 +179,6 @@ List eval(List list, List environment){
     List temp = list;
     List temp2 = list;
     
-//    printf("list: ");
-//    printList(list, 1);
-//    printf("\n");
-//    printf("env: ");
-//    printList(environment, 1);
-//    printf("\n");
-    
-
     if(carFn(list) != NULL){
         if(carFn(list)->symbol != NULL){
             char* symbol = carFn(list)->symbol;         //create symbol char
@@ -198,23 +190,23 @@ List eval(List list, List environment){
             
             // adds function to environment
             if(!strcmp(symbol, "define")){
-                if(!symbolFnTF(carFn(cdrFn(list)))){    //defining a function
-                    return defineFn(list);  // if not defining a symbol
+                if(!symbolFnTF(carFn(cdrFn(list)))){    // defining a function
+                    return defineFn(list);
                 }
-                else{
+                else{                                   // else defining a symbol
                     return defineSymbol(carFn(cdrFn(list)), carFn(cdrFn(cdrFn(list))));
                 }
             }
 
+            // these two must be called before eval() in temp
             if(!strcmp(symbol, "cond")){
                 return condFn(cdrFn(list), environment);
             }
-            
-            //not evaluating like it should with a defined symbol
             if(!strcmp(symbol, "quote")){
                 return quoteFn(carFn(cdrFn(list)));
             }
             
+            // Scheme Functions
             if (cdrFn(list) != NULL && carFn(cdrFn(list)) != NULL) {    // so that temp can be created
                 temp = eval(carFn(cdrFn(list)), environment);           // List of 2nd conCell List
             }
@@ -254,45 +246,23 @@ List eval(List list, List environment){
                 }
         }
     }
-    //List temp4 = (assocFn(list, environment));
-//                  printf("assoc: ");
-//                  printList(temp4, 1);
-//                  printf("\n");
-//    printf("is it a symbol: ");
-//    printList(carFn(temp4), 1);
-//    printf("\n");
     // find symbols from the environment -- if so print out the value
     if(carFn(assocFn(list, environment)) != NULL){
         List defVal = carFn(cdrFn(assocFn(list, environment)));
         if(assocFnTF(list, environment)){   // Symbol
-//            printf("list: ");
-//            printList(list, 1);
-//            printf("\n");
-//                    printf("listAssoc: ");
-//                    printList(assocFn(list, environment), 1);
-//                    printf("\n");
-//                    printf("cdr of that: ");
-//                    printList(cdrFn(assocFn(list, environment)), 1);
-//                    printf("\n");
-//                    printf("car of cdr (defVal): ");
-//                    printList(carFn(cdrFn(assocFn(list, environment))), 1);
-//                    printf("\n");
-//                    printf("symbol_defVal: ");
-//                    printf("%s\n", assocFn(list, environment)->symbol);
-//                    printf("symbol_car(defVal): ");
-//                    printf("%s\n", carFn(defVal)->symbol);
-//            printf("symbol refered\n");
-//            printf("defVal: ");
-//            printList(defVal, 1);
-//            printf("\n");
+            //printf("symbol refered\n");
             return defVal;
         }
     }else if(carFn(list) != NULL && carFn(assocFn(carFn(list), environment)) != NULL){
-//        printf("function refered\n");
+        //printf("function refered\n");
         return userDefFn(list, environment);
     }
     return list;
 }
+
+/****************************************************************
+ DEFINING USER-DEFINED FUNCTIONS
+ ****************************************************************/
 
 // evaluates a function
 List userDefFn(List list, List environment){
@@ -300,21 +270,13 @@ List userDefFn(List list, List environment){
     List parameter = cdrFn(carFn(cdrFn(carFn(cdrFn(function)))));
     if(cdrNull(parameter) == NULL){
         List argument = eval(carFn(cdrFn(list)), environment);
-        environment = assignParameters(argument, parameter, environment);    // one variable
+        environment = assignParameters(argument, parameter, environment);    // single parameter
     }
     else{
-        List argument = cdrFn(list); //eval(cdrFn(list), environment);
-        environment = assignMultParameters(argument, parameter, environment); // multiple variables
+        List argument = cdrFn(list);
+        environment = assignMultParameters(argument, parameter, environment); // multiple parameters
     }
     List functionCall = carFn(cdrFn(cdrFn(carFn(cdrFn(function)))));
-    
-//    printf("func: ");
-//    printList(functionCall, 1);
-//    printf("\n");
-//    printf("env: ");
-//    printList(environment, 1);
-//    printf("\n");
-//    printf("THIS IS BEING INPUTED\n");
     return eval(functionCall, environment);
 }
 
@@ -337,11 +299,36 @@ List assignMultParameters(List argument, List parameter, List environment){
     return environment;
 }
 
+/****************************************************************
+ ADDING SYMBOLS+FUNCTIONS TO ENVIRONMENT
+ ****************************************************************/
+
+// Adds the defined symbol to the environment
+List defineSymbol(List symbol, List list){
+    //printf("symbol in environment\n");
+    List evalList = eval(list, environment);
+    List tempList = consFn(evalList, createCell(NULL));
+    List tempDefine = consFn(symbol, tempList);
+    environment = consFn(tempDefine, environment);
+    return symbol;
+}
+
+// Adds a function to the environment
+List defineFn(List list){
+    //printf("function in environment\n");
+    List symbol = carFn(carFn(cdrFn(list)));
+    List tempList = consFn(list, createCell(NULL));
+    List tempDefine = consFn(symbol, tempList);
+    environment = consFn(tempDefine, environment);
+    return symbol;
+}
+
+/****************************************************************
+ BUILT IN SCHEME FUNCTIONS
+ ****************************************************************/
+
 // Parses list as a single element
 List quoteFn(List list){
-    //if(list->symbol != NULL && !strcmp(list->symbol, "()")){
-    //    return NULL;
-    //}
     return list;
 }
 
@@ -352,15 +339,10 @@ List carFn(List list){
 
 // Returns the rest element of a list
 List cdrFn(List list){
-    if(list->rest == NULL){//} && strcmp(list->symbol, "#f")){
-        if(strcmp(list->symbol, "#f")){// && assocFn(list, environment) == NULL){
-            //printf("normal cdr\n");
+    if(list->rest == NULL){
+        if(strcmp(list->symbol, "#f")){
            return createCell("#f");
         }
-//        if(strcmp(list->symbol, "")){
-//            printf("should be only a user def symbol\n");
-//            return createCell("#f");
-//        }
     }
     return list->rest;
 }
@@ -427,18 +409,11 @@ List nullFn(List list){
     if(list == NULL){
         return createCell("#t");
     }
-//    printf("NULL FN\n");
     if(list->symbol != NULL){
         if(!strcmp(list->symbol, "#f") || !strcmp(list->symbol, "()")){
-            printf("true in NULL?\n");
             return createCell("#t");
         }
-//        printf("list: ");
-//        printList(list, 1);
-//        printf("\nsymbol: ");
-//        printf("%s\n", list->symbol);
-        if(!strcmp(list->symbol, "") && carFn(list) == NULL){
-            printf("true in NULL / sneaky way.. \n");
+        if(!strcmp(list->symbol, "") && carFn(list) == NULL){   // for user-defined symbols
             return createCell("#t");
         }
     }
@@ -461,36 +436,18 @@ List equalFn(List list1, List list2){
     }
     return createCell("()");
 }
-//if it is a list call list equalFN
 
 // private fn called by equalFn: evaluates equal? of a list
 int equalListFn(List list1, List list2){
     // if it is not a list.. make it one
-    //printf("inside helper method\n");
     if(!symbolFnTF(list1) && !symbolFnTF(list2)){
-        //equalFn(list1, list2);
         return equalListFn(carFn(list1), carFn(list2)) && equalListFn(cdrFn(list1), cdrFn(list2));
     }
-    //printf("1\n");
     // evaluates a single symbol
-    if(list1 == NULL && list2 == NULL) return 1; // if nothing
-    if(carFn(list1) == NULL){       // if the list is length 1
-            //printf("2\n");
+    if(list1 == NULL && list2 == NULL) return 1; // if nothing (shouldn't be called)
+    if(carFn(list1) == NULL){                   // if the list is length 1
         if(carFn(list2) == NULL){
-                //printf("3\n");
             if(!strcmp(list1->symbol, list2->symbol)){
-                    //printf("4\n");
-//                printf("list1: ");
-//                printList(list1, 1);
-//                printf("\n");
-//                printf("symbo1: ");
-//                printf("%s\n", list1->symbol);
-//                printf("list2: ");
-//                printList(list2, 1);
-//                printf("\n");
-//                printf("symbo2: ");
-//                printf("%s\n", list2->symbol);
-                
                 return 1; // the symbol is equal
             }else return 0;
         }else return 0;
@@ -498,10 +455,8 @@ int equalListFn(List list1, List list2){
     // evaluate a list
     if(!strcmp(carFn(list1)->symbol, carFn(list2)->symbol)){
         // recursion
-        printf("hi1\n");
         if(cdrFn(list1) == NULL){
             if(cdrFn(list2) == NULL){
-                printf("returnHERE\n");
                 return equalListFn(carFn(list1), carFn(list2)); // recursive call of car
             }else return 0;
         }else return equalListFn(cdrFn(list1), cdrFn(list2));   // recursive call of cdr
@@ -550,83 +505,39 @@ int assocFnTF(List symbolList, List list){
 List condFn(List list, List environment){
     List temp;
     int trueFunction;   // if or else
-//    printf("beg of Cond\n");
-//    printf("list: ");
-//    printList(list, 1);
-//    printf("\n");
-
     if(carFn(carFn(list)) != NULL){     // evaluates function
         temp = carFn(carFn(list));
-        //temp = carFn(list);
-//        printf("temp: ");
-//        printList(temp, 1);
-//        printf("\n");
         trueFunction = 0;
     }
-    else{   // evaluates #t function
+    else{                               // evaluates #t or else function
         temp = carFn(list);
-//        printf("temp2: ");
-//        printList(temp, 1);
-//        printf("\n");
         trueFunction = 1;
     }
     // if statement is true
     if(!strcmp(eval(temp, environment)->symbol, "#t") || !strcmp(eval(temp, environment)->symbol, "else")){
         if(!trueFunction){
-//            printf("returning: ");
-//            printList(carFn(cdrFn(carFn(list))), 1);
-//            printf("\n");
             return eval(carFn(cdrFn(carFn(list))), environment);
         }
         if(trueFunction){
-//            printf("returning1: ");
-//            printList(carFn(cdrFn(list)), 1);
-//            printf("\n");
             return eval(carFn(cdrFn(list)), environment);
         }
     }
     else{   // recurssion
-//        printf("recurssion called: ");
-//        printList(carFn(cdrFn(list)), 1);
-//        printf("\n");
         return condFn(cdrFn(list), environment);
-        //return condFn(carFn(cdrFn(list)), environment);
     }
     printf("returning list - ERROR\n");
     return list; // to remove error
 }
 
-
-// Adds the defined symbol to the environment
-List defineSymbol(List symbol, List list){
-    printf("symbol in environment\n");
-    List evalList = eval(list, environment);
-    List tempList = consFn(evalList, createCell(NULL));
-    List tempDefine = consFn(symbol, tempList);
-    environment = consFn(tempDefine, environment);
-    return symbol;
-}
-
-// Adds a function to the environment
-List defineFn(List list){
-    printf("function in environment\n");
-    List symbol = carFn(carFn(cdrFn(list)));
-    List tempList = consFn(list, createCell(NULL));
-    List tempDefine = consFn(symbol, tempList);
-    environment = consFn(tempDefine, environment);
-    return symbol;
-}
-
-
 void S_Expression(int firstTime){
-    if(firstTime){  // initiate environments
+    if(firstTime){                              // initiate environment
         environment = createCell(NULL);
     }
     token = (char *) calloc(20, sizeof(char));
     startTokens(20);
     strcpy(token, getToken());
     
-    List buildList = s_expr(0);     // depth starts at 0
-    printList(eval(buildList, environment), 1);
+    List buildList = s_expr(0);                 // depth starts at 0
+    printList(eval(buildList, environment), 1); // depth starts at 1
     printf("\n");
 }
