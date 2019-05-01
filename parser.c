@@ -467,7 +467,7 @@ int equalListFn(List list1, List list2){
 // Returns #t if element is a symbol, else #f
 int symbolFnTF(List list){
     //if it is a list (more than one element) than return false
-    if(list->symbol != NULL && carFn(list) == NULL && strcmp(list->symbol, "#f")){
+    if(list->symbol != NULL && cdrNull(list) == NULL){
         return 1;
     }
     else return 0;
