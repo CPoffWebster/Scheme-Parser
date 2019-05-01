@@ -28,7 +28,6 @@
  }; typedef struct cell *List;
 
 // Environment for the defined functions, created in eval()
-List fn_environment;
 List environment;
 
 /****************************************************************
