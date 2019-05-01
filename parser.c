@@ -198,7 +198,7 @@ List eval(List list, List environment){
                 }
             }
 
-            // these two must be called before eval() in temp
+            // these must be called before eval() in temp
             if(!strcmp(symbol, "cond")){
                 return condFn(cdrFn(list), environment);
             }
