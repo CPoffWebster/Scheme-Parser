@@ -217,6 +217,9 @@ List eval(List list, List environment){
                 if(!strcmp(symbol, "environment")){
                     return environment;
                 }
+                if(!strcmp(symbol, "-")){
+                    return subtractFn(temp, temp2);
+                }
                 if(!strcmp(symbol, "car")){
                     return carFn(temp);
                 }
@@ -527,6 +530,21 @@ List condFn(List list, List environment){
     }
     printf("returning list - ERROR\n");
     return list; // to remove error
+}
+
+// Subtracts the 2nd input from the first
+List subtractFn(List list1, List list2){
+    //convert to integer
+    char* first = list1->symbol;
+    char* rest = list2->symbol;
+    int number1 = atoi(first);
+    int number2 = atoi(rest);
+    //subtract
+    int subtract = number1 - number2;
+    //convert back to char*
+    char newValue[20];
+    sprintf(newValue, "%i", subtract);
+    return createCell(newValue);
 }
 
 void S_Expression(int firstTime){

@@ -201,6 +201,16 @@ List condFn(List list, List environment);
  */
 List listFn(List list);
 
+/****************************************************************
+ Function: subtractFn
+ --------------------
+ (- a b) will return a-b by converting both into ints, making the
+ subtraction calculation, and then returning the solved value as
+ createCell(calculation). This function supports tower-of-hanoi
+ 
+ */
+List subtractFn(List list1, List list2);
+
 
 /****************************************************************
  DEFINING USER-DEFINED FUNCTIONS
