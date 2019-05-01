@@ -199,7 +199,7 @@ List condFn(List list, List environment);
  returns cons of a list with #f
 
  */
-List listFn(List list);
+List listFn(List list, List environment);
 
 /****************************************************************
  Function: subtractFn

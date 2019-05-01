@@ -205,6 +205,9 @@ List eval(List list, List environment){
             if(!strcmp(symbol, "quote")){
                 return quoteFn(carFn(cdrFn(list)));
             }
+            if(!strcmp(symbol, "list")){
+                return listFn(cdrFn(list), environment);
+            }
             
             // Scheme Functions
             if (cdrFn(list) != NULL && carFn(cdrFn(list)) != NULL) {    // so that temp can be created
@@ -231,9 +234,6 @@ List eval(List list, List environment){
                 }
                 if(!strcmp(symbol, "cons")){
                     return consFn(temp, temp2);
-                }
-                if(!strcmp(symbol, "list")){
-                    return listFn(cdrFn(list));//listFn(eval(cdrFn(list), environment));
                 }
                 if(!strcmp(symbol, "null?")){
                     return nullFn(temp);
@@ -364,26 +364,11 @@ List symbolFn(List list){
     else return createCell("()");
 }
 
-// returns cons of a list with #f
-//List listFn(List list){
-//    return consFn(list, createCell("#f"));
-//}
-
-List listFn(List list){
-    printf("listFn called\n");
-    //list = eval(list, environment);
-    printf("list: ");
-    printList(list, 1);
-    printf("\n");
+List listFn(List list, List environment){
     if(!strcmp(nullFn(list)->symbol, "#t")){
         return eval(list, environment);
     }
-    printf("env: ");
-    printList(environment, 1);
-    printf("\nCARFNlist: ");
-    printList(eval(carFn(list), environment), 1);
-    printf("\n");
-    return consFn(eval(carFn(list), environment), listFn(cdrFn(list)));
+    return consFn(eval(carFn(list), environment), listFn(cdrFn(list), environment));
 }
 
 // Constructs a list given two or more elements
